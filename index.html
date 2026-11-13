@@ -232,6 +232,12 @@ nav.tabs button[aria-current="page"]{color:var(--berry);background:var(--berry-b
 input[type="time"].field{min-width:0}
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .two .field{width:100%}
+/* 아이폰: 시간·선택 칸은 원래 최소 폭이 있어 이름표(label)가 넓어지며 카드 밖으로 나감 → 칸 폭에 맞추기 */
+label.lb{grid-template-columns:minmax(0,1fr)}
+input[type="time"].field,select.field{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%}
+input[type="time"].field::-webkit-date-and-time-value{text-align:left;min-height:1.5em}
+select.field{background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 12px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:32px}
 .meal{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .meal li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;overflow-wrap:anywhere}
 .meal li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);flex:none}
@@ -394,7 +400,7 @@ details.more summary{cursor:pointer;color:var(--soft);font-size:.9rem;padding:4p
 </div></nav>
 
 <script>
-const APP_VER = '11-14 c';   // 고칠 때마다 바꿔서 핸드폰에 새 판이 왔는지 확인
+const APP_VER = '11-14 d';   // 고칠 때마다 바꿔서 핸드폰에 새 판이 왔는지 확인
 
 /* ---------- 날짜 ---------- */
 const pad = n => String(n).padStart(2, '0');
@@ -977,8 +983,8 @@ function vSched() {
       <label class="lb">학원 이름<input class="field" id="acName" maxlength="20" placeholder="예: 영어 학원"></label>
       <div><span class="muted">가는 요일</span><div class="wdays" role="group" aria-label="가는 요일">${WD_ORDER.map(x => `<button type="button" data-act="acday" data-w="${x}" aria-pressed="${(UI.acDays || []).includes(x)}">${WD[x]}</button>`).join('')}</div></div>
       <div class="two">
-        <label class="lb">시작<input class="field" id="acStart" type="time"></label>
-        <label class="lb">끝<input class="field" id="acEnd" type="time"></label>
+        <label class="lb">시작 (눌러서 고르기)<input class="field" id="acStart" type="time"></label>
+        <label class="lb">끝 (없으면 비워 두기)<input class="field" id="acEnd" type="time"></label>
       </div>
       <label class="lb">챙길 것 (없으면 비워 두기)<input class="field" id="acBring" maxlength="40" placeholder="예: 단어장, 교재"></label>
       ${msg('acad')}
