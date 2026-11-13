@@ -2,14 +2,14 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=Jua&family=Nanum+Pen+Script&display=swap">
 <style>
 /* 방안 공책 위 스티커 다이어리: 위 머리, 가운데 한 줄 카드, 아래 고정 탭 */
 :root{
   --paper:#EEF5F2; --grid:#DCE8E3; --card:#FFFFFF; --ink:#22314A; --soft:#56657A; --line:#D3E0DB;
-  --berry:#CF3A61; --on-berry:#FFFFFF; --berry-bg:#FCE6EC;
+  --berry:#B8294F; --on-berry:#FFFFFF; --berry-bg:#FCE6EC;
   --sun:#E9A30C; --sun-ink:#7A5200; --sun-bg:#FFF2CC;
-  --mint:#18876F; --mint-bg:#DCF3EA;
+  --mint:#137A63; --mint-bg:#DCF3EA;
   --display:"Jua","Gowun Dodum",system-ui,"Malgun Gothic",sans-serif;
   --body:"Gowun Dodum",system-ui,-apple-system,"Malgun Gothic",sans-serif;
   --r:18px;
@@ -49,6 +49,7 @@ button{cursor:pointer}
 
 .card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
 .wrap{grid-template-columns:minmax(0,1fr)}
+main#view{width:100%}
 .wrap>*,.card>*,.add>*,.set-task>*,.row>*{min-width:0}
 input.field{width:100%}
 .set-task .field{flex:1 1 0}
@@ -93,7 +94,7 @@ input.field{width:100%}
 
 .list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
 .row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);border-radius:14px;min-width:0}
-.row .grow{flex:1;min-width:0;overflow-wrap:anywhere}
+.row .grow{flex:1;min-width:0;overflow-wrap:anywhere;word-break:keep-all}
 .chk{width:30px;height:30px;border-radius:9px;border:2px solid var(--line);background:var(--card);display:grid;place-items:center;flex:none;color:var(--card)}
 .chk[aria-pressed="true"]{background:var(--mint);border-color:var(--mint)}
 .done-txt{text-decoration:line-through;color:var(--soft)}
@@ -150,10 +151,203 @@ th.sun{color:var(--berry)!important}
 
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1.5px solid var(--line);
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
-nav.tabs .in-nav{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+nav.tabs .in-nav{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
 nav.tabs button{border:0;background:transparent;display:grid;place-items:center;gap:2px;padding:6px 0;border-radius:12px;color:var(--soft);font-family:var(--display);font-size:.82rem;min-height:54px}
 nav.tabs button[aria-current="page"]{color:var(--berry);background:var(--berry-bg)}
 .empty{text-align:center;color:var(--soft);padding:14px 8px;border:1.5px dashed var(--line);border-radius:14px}
+
+/* 미니게임 */
+.games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gcard{border:2px solid var(--line);border-radius:16px;padding:14px 10px;display:grid;gap:8px;justify-items:center;text-align:center;background:var(--card)}
+.gcard .ic{width:40px;height:40px;color:var(--berry)}
+.gcard h3{font-size:1.15rem}
+.gcard .muted{word-break:keep-all}
+.gcard .btn{width:100%}
+.btn:disabled{opacity:.4;cursor:default}
+.lock{background:var(--sun-bg);color:var(--sun-ink);border-radius:14px;padding:12px 14px;font-family:var(--display);text-align:center}
+.memo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.mcard{aspect-ratio:1;border-radius:14px;border:2px solid transparent;background:var(--berry);color:var(--on-berry);display:grid;place-items:center;padding:0;transition:transform .15s}
+.mcard .ic{width:36px;height:36px}
+.mcard .back{opacity:.45;width:26px;height:26px}
+.mcard.open{background:var(--card);color:var(--ink);border-color:var(--sun);transform:scale(1.04)}
+.mcard.done{background:var(--mint-bg);color:var(--mint);border-color:var(--mint)}
+.qbox{font-family:var(--display);font-size:2.4rem;line-height:1.2;text-align:center;font-variant-numeric:tabular-nums}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opts .btn{font-size:1.5rem;min-height:64px;background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.fb{text-align:center;font-family:var(--display);min-height:1.5em;margin:0}
+.fb.good{color:var(--mint)} .fb.bad{color:var(--berry)}
+.gstat{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:var(--display)}
+.gstat .num{font-size:1.3rem}
+.result{text-align:center;display:grid;gap:8px;justify-items:center}
+.result .num{font-size:2.6rem;line-height:1.1;color:var(--berry)}
+.holes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;touch-action:manipulation}
+.hole{aspect-ratio:1;border-radius:50%;border:3px solid var(--line);background:var(--paper);display:grid;place-items:center;padding:0;
+  font-family:var(--display);font-size:1.6rem;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.hole .ic{width:58%;height:58%}
+.hole.star{border-color:var(--sun);background:var(--sun-bg);color:var(--sun)}
+.hole.star .ic{animation:popup .18s ease-out}
+.hole.bee{border-color:var(--ink);background:var(--sun-bg);color:var(--ink)}
+.hole.bee .ic{animation:popup .18s ease-out}
+.hole.hit{border-color:var(--mint);background:var(--mint-bg);color:var(--mint)}
+.hole.ouch{border-color:var(--berry);background:var(--berry-bg);color:var(--berry);animation:shake .3s}
+@keyframes popup{from{transform:translateY(40%) scale(.4)}to{transform:none}}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#cv{display:block;width:100%;height:min(56vh,440px);border-radius:14px;background:var(--paper);border:1.5px solid var(--line);touch-action:none}
+.lives{color:var(--berry);letter-spacing:2px}
+
+/* 일정 (학교 주간 + 학원) */
+.wkbar{display:flex;align-items:center;gap:8px}
+.wkbar h2{flex:1;text-align:center;font-size:1.15rem}
+.dchips{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dchip{position:relative;border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:6px 0 10px;display:grid;justify-items:center;font-family:var(--display);line-height:1.15;min-height:54px}
+.dchip span{font-size:.8rem;color:var(--soft)}
+.dchip b{font-weight:400;font-size:1.1rem}
+.dchip.is-today{border-color:var(--berry)}
+.dchip[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.dchip[aria-pressed="true"] span{color:inherit}
+.dchip i{position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--berry)}
+.plist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.prow{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:14px;min-width:0}
+.prow>.grow{flex:1;min-width:0}
+.pn{flex:none;width:30px;height:30px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-family:var(--display)}
+.prow.test{border-color:var(--berry);background:var(--berry-bg)}
+.prow.ac{border-style:dashed;border-color:var(--mint)}
+.prow.ac .pn{background:var(--mint-bg);color:var(--mint)}
+.prow.ac .pn .ic{width:18px;height:18px}
+.ps{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ps b{font-family:var(--display);font-weight:400;font-size:1.05rem}
+.pw{font-size:.92rem;overflow-wrap:anywhere}
+.tag{background:var(--berry);color:var(--on-berry);border-radius:6px;padding:0 6px;font-size:.75rem;font-family:var(--display)}
+.bring{background:var(--sun-bg);border-radius:14px;padding:10px 14px;overflow-wrap:anywhere}
+.bring b{font-family:var(--display);font-weight:400;color:var(--sun-ink);display:block}
+.evt{background:var(--berry-bg);color:var(--berry);border-radius:12px;padding:8px 12px;font-family:var(--display)}
+.subj{display:flex;flex-wrap:wrap;gap:6px}
+.sp{border:1.5px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.9rem}
+.sp b{font-family:var(--display);font-weight:400;color:var(--soft);margin-right:4px}
+.sp.test{border-color:var(--berry);color:var(--berry)}
+.wdays{display:flex;gap:4px;flex-wrap:wrap}
+.wdays button{min-width:40px;min-height:40px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;font-family:var(--display)}
+.wdays button[aria-pressed="true"]{background:var(--mint);color:var(--card);border-color:var(--mint)}
+.notes{margin:0;padding-left:1.1em;display:grid;gap:6px;font-size:.92rem;overflow-wrap:anywhere}
+input[type="time"].field{min-width:0}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.two .field{width:100%}
+.meal{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.meal li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;overflow-wrap:anywhere}
+.meal li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);flex:none}
+.meal li.warn{color:var(--berry);font-family:var(--display)}
+.meal li.warn::before{background:var(--berry)}
+.meal-tag{background:var(--mint-bg);color:var(--mint);border-radius:999px;padding:2px 10px;font-family:var(--display);font-size:.85rem;justify-self:start}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pills .pill[aria-pressed="true"]{background:var(--berry);color:var(--on-berry);border-color:var(--berry)}
+
+/* 기분 */
+.moods{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.mood{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:6px 0;display:grid;justify-items:center;gap:0;font-family:var(--display)}
+.mood span{font-size:1.7rem;line-height:1.2}
+.mood small{font-size:.78rem;color:var(--soft)}
+.mood[aria-pressed="true"]{border-color:var(--sun);background:var(--sun-bg)}
+.mood[aria-pressed="true"] small{color:var(--sun-ink)}
+table.grid td.emo{font-size:1rem;background:transparent}
+/* 단어 */
+.word-en{font-family:var(--display);font-size:1.1rem}
+.say{border:0;background:transparent;padding:4px 6px;border-radius:8px;font-size:1.05rem;flex:none}
+.wstat{font-size:.75rem;color:var(--soft);white-space:nowrap}
+.wq{text-align:center;display:grid;gap:4px;justify-items:center}
+.wq .big{font-family:var(--display);font-size:2.1rem;line-height:1.2;overflow-wrap:anywhere}
+.opts.words .btn{font-size:1.1rem;min-height:58px;overflow-wrap:anywhere;padding:8px}
+details.more summary{cursor:pointer;color:var(--soft);font-size:.9rem;padding:4px 0}
+/* 읽는 중 */
+.rbook{display:grid;gap:8px;padding:12px;border:1.5px solid var(--line);border-radius:14px}
+.rbook .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap}
+.rbook .top b{font-family:var(--display);font-weight:400;font-size:1.05rem;overflow-wrap:anywhere}
+.rctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rctl .field{flex:1 1 90px;min-height:40px}
+/* 용돈 분류 */
+.cbar{display:grid;grid-template-columns:5.2em minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.92rem}
+.cbar span{font-family:var(--display)}
+.cbar b{font-weight:400;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cat{font-size:.78rem;border:1.5px solid var(--line);border-radius:999px;padding:0 8px;color:var(--soft);white-space:nowrap}
+.mnav{display:flex;align-items:center;gap:6px}
+.mnav .round{width:36px;height:36px}
+.task span,.stk-txt h2{word-break:keep-all}
+
+/* ===== 테마 (설정에서 고름: html[data-skin] = A 지금 · B 파스텔 · C 다꾸 · D 하늘) ===== */
+/* B. 파스텔 스티커북 */
+:root[data-skin="B"]{--r:26px}
+:root[data-skin="B"] body{background-image:radial-gradient(var(--grid) 2px,transparent 2.6px);background-size:20px 20px}
+:root[data-skin="B"] .task{border-radius:22px}
+:root[data-skin="B"] .btn{border-radius:999px}
+:root[data-skin="B"] nav.tabs{border-top:none;border-radius:26px 26px 0 0}
+:root[data-skin="B"] nav.tabs button[aria-current="page"]{background:var(--berry);color:var(--on-berry)}
+@media (prefers-color-scheme: light){
+  :root[data-skin="B"]{--paper:#FFF4F8;--grid:#FFD9E7;--card:#FFFFFF;--ink:#3B2B4F;--soft:#6E5E80;--line:#F6DCE8;--berry:#B42A60;--on-berry:#fff;--berry-bg:#FFE1EC;
+    --sun:#FFB938;--sun-bg:#FFF1CF;--sun-ink:#7A5000;--mint:#13785F;--mint-bg:#DDF6EE}
+  :root[data-skin="B"] .brand{text-shadow:3px 3px 0 #FFD1E1}
+  :root[data-skin="B"] .card{border-color:transparent;box-shadow:0 5px 0 #F6DCE8,0 12px 26px rgba(217,67,122,.10)}
+  :root[data-skin="B"] .stickers{background:linear-gradient(135deg,#FFF1CF,#FFE1EC)}
+  :root[data-skin="B"] .task{border-color:transparent;box-shadow:0 4px 0 rgba(59,43,79,.07)}
+  :root[data-skin="B"] .task:nth-child(6n+1){background:#FFE7EF} :root[data-skin="B"] .task:nth-child(6n+2){background:#E6F0FF}
+  :root[data-skin="B"] .task:nth-child(6n+3){background:#FFF3D6} :root[data-skin="B"] .task:nth-child(6n+4){background:#E3F7EE}
+  :root[data-skin="B"] .task:nth-child(6n+5){background:#F0E8FF} :root[data-skin="B"] .task:nth-child(6n){background:#FFEADF}
+  :root[data-skin="B"] .task[aria-pressed="true"]{border-color:var(--mint)}
+  :root[data-skin="B"] .btn:not(.ghost):not(.armed){box-shadow:0 4px 0 #8C1F4A}
+  :root[data-skin="B"] nav.tabs{box-shadow:0 -6px 22px rgba(217,67,122,.12)}
+  :root[data-skin="B"] .gcard{border-color:transparent;background:#FFF7FA}
+  :root[data-skin="B"] .gcard:nth-child(5n+2){background:#F2F6FF} :root[data-skin="B"] .gcard:nth-child(5n+3){background:#FFF8E6}
+  :root[data-skin="B"] .gcard:nth-child(5n+4){background:#EFFAF5} :root[data-skin="B"] .gcard:nth-child(5n){background:#F5F0FF}
+}
+@media (prefers-color-scheme: dark){ :root[data-skin="B"]{--berry:#FF8DB3;--on-berry:#2A0E17;--berry-bg:#3D1F2C} }
+
+/* C. 다꾸 플래너 */
+:root[data-skin="C"]{--display:"Gowun Batang","Gowun Dodum",serif;--r:8px}
+:root[data-skin="C"] body{background-image:repeating-linear-gradient(transparent 0 29px,var(--grid) 29px 30px);background-size:auto}
+:root[data-skin="C"] :is(h1,h2,h3,.btn,.task,nav.tabs button,.seg button,.big-star b,.num,.amt,.word-en,.mood){font-weight:700}
+:root[data-skin="C"] .brand{font-family:"Nanum Pen Script",cursive;font-size:2.6rem;letter-spacing:0;line-height:1;font-weight:400;color:var(--ink)}
+:root[data-skin="C"] .brand small{font-family:"Gowun Batang",serif;font-size:.8rem;font-weight:400}
+:root[data-skin="C"] .card{position:relative;border-width:1px;box-shadow:2px 3px 0 rgba(0,0,0,.06);margin-top:6px}
+:root[data-skin="C"] .card::before{content:"";position:absolute;top:-10px;left:50%;width:86px;height:20px;transform:translateX(-50%) rotate(-2deg);border-radius:2px;pointer-events:none;
+  background:repeating-linear-gradient(45deg,rgba(194,82,60,.32) 0 6px,rgba(194,82,60,.18) 6px 12px)}
+:root[data-skin="C"] .card:nth-of-type(3n+2)::before{background:repeating-linear-gradient(45deg,rgba(79,127,99,.34) 0 6px,rgba(79,127,99,.18) 6px 12px);transform:translateX(-50%) rotate(2deg)}
+:root[data-skin="C"] .card:nth-of-type(3n)::before{background:repeating-linear-gradient(45deg,rgba(217,164,65,.4) 0 6px,rgba(217,164,65,.2) 6px 12px)}
+:root[data-skin="C"] .task{border-style:dashed}
+:root[data-skin="C"] .task[aria-pressed="true"]{border-style:solid}
+:root[data-skin="C"] nav.tabs button[aria-current="page"]{background:transparent;color:var(--berry);box-shadow:inset 0 -3px 0 var(--berry);border-radius:0}
+@media (prefers-color-scheme: light){
+  :root[data-skin="C"]{--paper:#F5EFE3;--grid:#E6DCC8;--card:#FFFDF7;--ink:#2E2A26;--soft:#6E655A;--line:#E2D6C0;--berry:#A33F2C;--on-berry:#fff;--berry-bg:#F6E1D8;
+    --sun:#D9A441;--sun-bg:#F7EBCB;--sun-ink:#6E4F12;--mint:#3F6C52;--mint-bg:#E2EDE4}
+}
+@media (prefers-color-scheme: dark){ :root[data-skin="C"]{--berry:#E58A72;--on-berry:#2A120C;--berry-bg:#3A231C} }
+
+/* D. 청량 하늘 */
+:root[data-skin="D"]{--r:22px}
+:root[data-skin="D"] .stickers{background:linear-gradient(135deg,#1F4FD6,#3A6AE8)}
+:root[data-skin="D"] .stickers .stk-txt h2{color:#fff}
+:root[data-skin="D"] .stickers .muted{color:#EEF3FF}
+:root[data-skin="D"] .stickers .bar{background:rgba(255,255,255,.35);border-color:transparent}
+:root[data-skin="D"] .stickers .bar i{background:#FFD25A}
+:root[data-skin="D"] .task{border-radius:18px}
+:root[data-skin="D"] nav.tabs{left:12px;right:12px;bottom:10px;border:none;border-radius:24px;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+:root[data-skin="D"] nav.tabs button[aria-current="page"]{background:var(--berry);color:var(--on-berry)}
+@media (prefers-color-scheme: light){
+  :root[data-skin="D"]{--paper:#EEF5FF;--grid:transparent;--card:#FFFFFF;--ink:#13294B;--soft:#526480;--line:#DCE7F5;--berry:#1F55D6;--on-berry:#fff;--berry-bg:#E3ECFF;
+    --sun:#FFB020;--sun-bg:#FFF4D9;--sun-ink:#7A5200;--mint:#0B7A5E;--mint-bg:#DDF5EC}
+  :root[data-skin="D"] body{background:linear-gradient(180deg,#BFDDFF 0,#EEF5FF 300px) fixed}
+  :root[data-skin="D"] body::before{background:#BFDDFF}
+  :root[data-skin="D"] .card{border-color:transparent;box-shadow:0 3px 14px rgba(19,41,75,.08)}
+  :root[data-skin="D"] .task{border-color:transparent;background:#F2F6FC}
+  :root[data-skin="D"] .task[aria-pressed="true"]{border-color:var(--mint);background:var(--mint-bg)}
+  :root[data-skin="D"] .gcard{border-color:transparent;background:#F2F6FC}
+}
+@media (prefers-color-scheme: dark){ :root[data-skin="D"]{--berry:#7FA6FF;--on-berry:#0E1A33;--berry-bg:#1C2A4A} }
+
+/* 설정의 테마 고르기 */
+.skins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.skin{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:10px;display:grid;gap:6px;justify-items:start;text-align:left;font-family:var(--display)}
+.skin[aria-pressed="true"]{border-color:var(--berry);background:var(--berry-bg)}
+.skin .sw{display:flex;gap:4px}
+.skin .sw i{width:18px;height:18px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+.skin small{font-family:var(--body);color:var(--soft);font-size:.8rem}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -172,6 +366,11 @@ nav.tabs button[aria-current="page"]{color:var(--berry);background:var(--berry-b
   <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M7.5 9l2 6.5 2.5-5 2.5 5 2-6.5M7 12h10"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></symbol>
+  <symbol id="i-game" viewBox="0 0 24 24"><rect x="2.5" y="7" width="19" height="11" rx="5.5"/><path d="M7.5 10.5v4M5.5 12.5h4"/><circle cx="15.3" cy="11.3" r="1" fill="currentColor" stroke="none"/><circle cx="17.6" cy="13.7" r="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><path d="M4 7.5h6M7 4.5v6M14 7.5h6M5 15l4 4M9 15l-4 4M14 15.5h6M14 19h6"/></symbol>
+  <symbol id="i-bee" viewBox="0 0 24 24"><ellipse cx="11" cy="7.2" rx="2.2" ry="3.4" transform="rotate(-20 11 7.2)" style="fill:var(--card)"/><ellipse cx="15" cy="7.6" rx="2" ry="3" transform="rotate(20 15 7.6)" style="fill:var(--card)"/><ellipse cx="13" cy="14.5" rx="7" ry="5" style="fill:var(--sun)"/><path d="M11 9.8v9.4M15 9.8v9.4"/><path d="M20 14.5h2.5"/><circle cx="5" cy="14" r="3.2" style="fill:currentColor"/><path d="M4 10.8l-1.5-2.5M6 10.8l1-2.6"/></symbol>
+  <symbol id="i-basket" viewBox="0 0 24 24"><path d="M3 10h18l-2 10H5z"/><path d="M8 10l3-6M16 10l-3-6M9 14v3M12 14v3M15 14v3"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17.5" rx="2"/><path d="M9 2.5h6v3.5H9zM8.5 10.5h7M8.5 14h7M8.5 17.5h4"/></symbol>
   <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
   <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
 </svg>
@@ -186,14 +385,16 @@ nav.tabs button[aria-current="page"]{color:var(--berry);background:var(--berry-b
 
 <nav class="tabs" aria-label="메뉴"><div class="in-nav">
   <button data-tab="today"><svg class="ic"><use href="#i-cal"/></svg>오늘</button>
+  <button data-tab="sched"><svg class="ic"><use href="#i-clip"/></svg>일정</button>
   <button data-tab="money"><svg class="ic"><use href="#i-coin"/></svg>용돈</button>
-  <button data-tab="books"><svg class="ic"><use href="#i-book"/></svg>독서</button>
+  <button data-tab="books"><svg class="ic"><use href="#i-book"/></svg>공부</button>
+  <button data-tab="game"><svg class="ic"><use href="#i-game"/></svg>게임</button>
   <button data-tab="log"><svg class="ic"><use href="#i-chart"/></svg>기록</button>
   <button data-tab="set"><svg class="ic"><use href="#i-gear"/></svg>설정</button>
 </div></nav>
 
 <script>
-const APP_VER = '11-13 b';   // 고칠 때마다 바꿔서 핸드폰에 새 판이 왔는지 확인
+const APP_VER = '11-14 c';   // 고칠 때마다 바꿔서 핸드폰에 새 판이 왔는지 확인
 
 /* ---------- 날짜 ---------- */
 const pad = n => String(n).padStart(2, '0');
@@ -224,7 +425,27 @@ const DEFAULT_SETTINGS = {
   ],
   goal: 30, reward: '주말에 영화 보기',
   saveName: '갖고 싶은 것', saveGoal: 30000,
+  gameLock: true,            // true = 오늘 할 일을 다 해야 게임이 열림
+  academies: [],             // 학원: { id, name, days:[0~6, 0=일], start:'15:00', end:'16:30', bring }
+  allergy: [],               // 급식 알레르기 번호 (1~19)
+  anniv: [],                 // 생일·기념일: { id, name, m, d, kind:'생일'|'기념일' }
+  theme: 'A',                // A 지금 · B 파스텔 · C 다꾸 · D 하늘 · auto 매일 바뀌기
 };
+const SKINS = [
+  { k: 'A', name: '방안 공책', sw: ['#EEF5F2', '#B8294F', '#137A63', '#E9A30C'] },
+  { k: 'B', name: '파스텔 스티커북', sw: ['#FFF4F8', '#B42A60', '#E6F0FF', '#FFB938'] },
+  { k: 'C', name: '다꾸 플래너', sw: ['#F5EFE3', '#A33F2C', '#3F6C52', '#D9A441'] },
+  { k: 'D', name: '청량 하늘', sw: ['#BFDDFF', '#1F55D6', '#0B7A5E', '#FFB020'] },
+];
+function skinToday() {
+  const t = S.settings.theme || 'A';
+  if (t !== 'auto') return t;
+  const n = Math.floor(parseD(today()).getTime() / 864e5 + 0.5);   // 날짜마다 하나씩 돌아가며
+  return SKINS[((n % 4) + 4) % 4].k;
+}
+const MOODS = [{ e: '😆', t: '최고' }, { e: '🙂', t: '좋아' }, { e: '😐', t: '그냥' }, { e: '😢', t: '슬퍼' }, { e: '😠', t: '화나' }];
+const OUT_CATS = ['간식', '학용품', '놀이', '선물', '교통', '기타'];
+const ALLERGENS = ['', '난류', '우유', '메밀', '땅콩', '대두', '밀', '고등어', '게', '새우', '돼지고기', '복숭아', '토마토', '아황산류', '호두', '닭고기', '쇠고기', '오징어', '조개류', '잣'];
 
 /* ---------- 상태 ---------- */
 let docs = {};              // key -> body (저장소 그대로)
@@ -232,10 +453,15 @@ let S = build(docs);        // 화면에서 쓰는 모양
 const UI = { tab: 'today', date: today(), followToday: true, moneyType: 'in', stars: 0, msg: {} };
 
 function build(d) {
-  const s = { settings: clone(DEFAULT_SETTINGS), days: {}, money: [], books: [], rewards: [] };
+  const s = { settings: clone(DEFAULT_SETTINGS), days: {}, money: [], books: [], rewards: [], games: { kind: 'games' }, weeks: {}, meals: {}, words: [], reading: [] };
   for (const [k, b] of Object.entries(d)) {
     if (!b) continue;
+    if (b.kind === 'word') { s.words.push({ ...b, key: k }); continue; }
+    if (b.kind === 'reading') { s.reading.push({ ...b, key: k }); continue; }
+    if (b.kind === 'week') { s.weeks[b.start] = b; continue; }
+    if (b.kind === 'meal') { s.meals[b.month] = b; continue; }
     if (b.kind === 'settings') s.settings = Object.assign(clone(DEFAULT_SETTINGS), b);
+    else if (b.kind === 'games') s.games = b;
     else if (b.kind === 'day') s.days[b.date] = b;
     else if (b.kind === 'money') s.money.push({ ...b, key: k });
     else if (b.kind === 'book') s.books.push({ ...b, key: k });
@@ -243,6 +469,8 @@ function build(d) {
   }
   const byDate = (a, b) => (b.date + (b.at || '')).localeCompare(a.date + (a.at || ''));
   s.money.sort(byDate); s.books.sort(byDate); s.rewards.sort(byDate);
+  s.words.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+  s.reading.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
   return s;
 }
 const dayOf = date => S.days[date] || { kind: 'day', date, done: {}, study: 0, hw: [] };
@@ -264,6 +492,10 @@ function put(key, body) {          // body === null 이면 지우기
   if (body === null) delete docs[key]; else docs[key] = body;
   S = build(docs); localSave(); render();
 }
+function putMany(map) {            // 여러 개를 한 번에 저장하고 한 번만 다시 그리기
+  for (const [k, v] of Object.entries(map)) { if (v === null) delete docs[k]; else docs[k] = v; }
+  S = build(docs); localSave(); render();
+}
 
 function setDot(t) { document.getElementById('saveDot').textContent = t; }
 
@@ -280,12 +512,13 @@ const view = document.getElementById('view');
 function render() {
   // 입력 중인 칸 지키기
   const keep = {}; let focusId = null, sel = null;
-  view.querySelectorAll('input[id]').forEach(i => { keep[i.id] = i.value; });
+  view.querySelectorAll('input[id],textarea[id]:not([readonly]),select[id]').forEach(i => { keep[i.id] = i.value; });
   const a = document.activeElement;
   if (a && a.id && view.contains(a)) { focusId = a.id; try { sel = [a.selectionStart, a.selectionEnd]; } catch (e) {} }
 
   if (UI.followToday) UI.date = today();
-  const f = { today: vToday, money: vMoney, books: vBooks, log: vLog, set: vSet }[UI.tab];
+  const sk = skinToday(); if (document.documentElement.dataset.skin !== sk) document.documentElement.dataset.skin = sk;
+  const f = { today: vToday, sched: vSched, money: vMoney, books: vBooks, game: vGame, log: vLog, set: vSet }[UI.tab];
   view.innerHTML = f();
   document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === UI.tab ? 'page' : 'false'));
 
@@ -335,6 +568,18 @@ function vToday() {
   </section>
 
   <section class="card">
+    <div class="card-h"><h2>${isToday ? '오늘' : '이날'} 기분</h2>${d.mood ? `<span class="muted">${MOODS[d.mood - 1].e} ${MOODS[d.mood - 1].t}</span>` : ''}</div>
+    <div class="moods" role="group" aria-label="기분 고르기">${MOODS.map((m, i) => `<button class="mood" data-act="mood" data-n="${i + 1}" aria-pressed="${d.mood === i + 1}" aria-label="${m.t}"><span aria-hidden="true">${m.e}</span><small>${m.t}</small></button>`).join('')}</div>
+    <form class="add" data-form="note">
+      <input class="field" id="note-${UI.date}" maxlength="60" value="${esc(d.note || '')}" placeholder="한 줄 일기: 오늘 있었던 일" aria-label="한 줄 일기">
+      <button class="btn sm">저장</button>
+    </form>
+    ${msg('note')}
+  </section>
+
+  ${isToday ? schedCardToday() : ''}
+
+  <section class="card">
     <div class="card-h"><h2>숙제 적기</h2><span class="muted">${hw.filter(h => h.done).length} / ${hw.length}</span></div>
     ${hw.length ? `<ul class="list">${hw.map((h, i) => `
       <li class="row">
@@ -369,6 +614,21 @@ function vMoney() {
   const inM = thisM.filter(m => m.type === 'in').reduce((n, m) => n + (+m.amount || 0), 0);
   const outM = thisM.filter(m => m.type === 'out').reduce((n, m) => n + (+m.amount || 0), 0);
   const recent = S.money.slice(0, 40);
+  const cm = UI.mMonth || ym;
+  const outs = S.money.filter(m => m.type === 'out' && (m.date || '').startsWith(cm));
+  const byCat = {}; outs.forEach(m => { const c = OUT_CATS.includes(m.cat) ? m.cat : '기타'; byCat[c] = (byCat[c] || 0) + (+m.amount || 0); });
+  const catTot = Object.values(byCat).reduce((a, b) => a + b, 0);
+  const catRows = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  const prevM = (() => { const d = parseD(cm + '-01'); d.setMonth(d.getMonth() - 1); return ymd(d).slice(0, 7); })();
+  const nextM = (() => { const d = parseD(cm + '-01'); d.setMonth(d.getMonth() + 1); return ymd(d).slice(0, 7); })();
+  const catCard = `
+  <section class="card">
+    <div class="card-h"><h2>어디에 썼을까?</h2>
+      <div class="mnav"><button class="round" data-act="mmonth" data-v="${prevM}" aria-label="지난달">${ic('left')}</button><span class="num">${+cm.slice(5)}월</span><button class="round" data-act="mmonth" data-v="${nextM}" aria-label="다음 달" ${cm >= ym ? 'disabled' : ''}>${ic('right')}</button></div></div>
+    ${catRows.length ? catRows.map(([c, v]) => `<div class="cbar"><span>${c}</span><div class="bar" role="img" aria-label="${c} ${Math.round(v / catTot * 100)}%"><i style="width:${Math.max(3, Math.round(v / catTot * 100))}%;background:var(--berry)"></i></div><b>${won(v)}</b></div>`).join('')
+      + `<p class="note">${+cm.slice(5)}월에 쓴 돈 모두 ${won(catTot)} · 가장 많이 쓴 곳은 <b>${catRows[0][0]}</b></p>`
+      : `<div class="empty">${+cm.slice(5)}월에 쓴 돈이 없어요.</div>`}
+  </section>`;
   return `
   <section class="card">
     <div class="card-h"><h2>지금 가진 돈</h2></div>
@@ -392,6 +652,7 @@ function vMoney() {
         <label class="lb">얼마?<input class="field" id="mAmt" inputmode="numeric" placeholder="예: 5000" autocomplete="off"></label>
         <label class="lb">무엇?<input class="field" id="mMemo" maxlength="40" placeholder="${UI.moneyType === 'in' ? '예: 주간 용돈, 설거지 도움' : '예: 떡볶이, 공책'}"></label>
       </div>
+      ${UI.moneyType === 'out' ? `<div><span class="muted">어디에 썼어?</span><div class="pills" role="group" aria-label="쓴 곳">${OUT_CATS.map(c => `<button type="button" class="pill" data-act="mcat" data-v="${c}" aria-pressed="${(UI.mcat || '간식') === c}">${c}</button>`).join('')}</div></div>` : ''}
       <div class="quick">
         ${[1000, 5000, 10000].map(n => `<button type="button" class="pill" data-act="mquick" data-n="${n}">+${n.toLocaleString()}</button>`).join('')}
         <button type="button" class="pill" data-act="mclear">지우기</button>
@@ -401,23 +662,100 @@ function vMoney() {
     </form>
   </section>
 
+  ${catCard}
+
   <section class="card">
     <div class="card-h"><h2>용돈 기록</h2><span class="muted">${S.money.length}건</span></div>
     ${recent.length ? `<ul class="list">${recent.map(m => `
       <li class="row">
         <span class="muted num" style="width:42px">${shortDate(m.date)}</span>
-        <span class="grow">${esc(m.memo || (m.type === 'in' ? '받은 돈' : '쓴 돈'))}</span>
+        <span class="grow">${m.type === 'out' ? `<span class="cat">${esc(OUT_CATS.includes(m.cat) ? m.cat : '기타')}</span> ` : ''}${esc(m.memo || (m.type === 'in' ? '받은 돈' : '쓴 돈'))}</span>
         <span class="amt ${m.type}">${m.type === 'in' ? '+' : '−'}${won(m.amount)}</span>
         <button class="x" data-act="del" data-key="${esc(m.key)}">지우기</button>
       </li>`).join('')}</ul>` : `<div class="empty">아직 기록이 없어요. 용돈을 받으면 위에 적어 보세요.</div>`}
   </section>`;
 }
 
+function speak(text) {
+  try {
+    if (!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.85;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+const canSpeak = () => 'speechSynthesis' in window;
+
+function vWords() {
+  const ws = S.words, show = UI.allWords ? ws : ws.slice(0, 20);
+  return `
+  <section class="card">
+    <div class="card-h"><h2>영어 단어장</h2><span class="muted">${ws.length}개</span></div>
+    <form data-form="word" style="display:grid;gap:10px">
+      <div class="add">
+        <label class="lb">영어<input class="field" id="wEn" maxlength="40" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="예: apple"></label>
+        <label class="lb">뜻<input class="field" id="wKo" maxlength="40" autocomplete="off" placeholder="예: 사과"></label>
+      </div>
+      ${msg('word')}
+      <button class="btn">단어 넣기</button>
+    </form>
+    <details class="more"><summary>여러 개 한 번에 넣기</summary>
+      <div style="display:grid;gap:8px;padding-top:6px">
+        <textarea class="field" id="wBulk" rows="5" placeholder="한 줄에 하나씩&#10;apple 사과&#10;library - 도서관"></textarea>
+        <div><button class="btn ghost sm" data-act="wbulk">한 번에 넣기</button></div>
+      </div>
+    </details>
+    <p class="note">단어를 4개 넘게 넣으면 게임 탭의 <b>영어 단어</b> 게임으로 연습할 수 있어요.</p>
+  </section>
+  <section class="card">
+    <div class="card-h"><h2>내 단어</h2>${ws.length ? '<span class="muted">맞힘 ✓ · 틀림 ✗</span>' : ''}</div>
+    ${ws.length ? `<ul class="list">${show.map(w => `<li class="row">
+        ${canSpeak() ? `<button class="say" data-act="say" data-key="${esc(w.key)}" aria-label="${esc(w.en)} 소리 듣기">🔊</button>` : ''}
+        <div class="grow"><span class="word-en">${esc(w.en)}</span> <span class="muted">${esc(w.ko)}</span></div>
+        ${w.right || w.wrong ? `<span class="wstat">✓${w.right || 0} ✗${w.wrong || 0}</span>` : ''}
+        <button class="x" data-act="del" data-key="${esc(w.key)}">지우기</button></li>`).join('')}</ul>
+      ${ws.length > 20 ? `<div><button class="pill" data-act="allwords">${UI.allWords ? '20개만 보기' : `전체 ${ws.length}개 보기`}</button></div>` : ''}`
+      : `<div class="empty">학원·학교에서 배운 단어를 넣어 보세요.</div>`}
+  </section>`;
+}
+
+function vReading() {
+  const rs = S.reading;
+  return `
+  <section class="card">
+    <div class="card-h"><h2>읽는 중인 책</h2></div>
+    ${rs.length ? rs.map(r => {
+      const pct = r.total ? Math.min(100, Math.round(r.page / r.total * 100)) : 0;
+      return `<div class="rbook">
+        <div class="top"><b>${esc(r.title)}</b><span class="num muted">${r.page} / ${r.total}쪽 (${pct}%)</span></div>
+        <div class="bar mint" role="img" aria-label="${pct}% 읽음"><i style="width:${pct}%"></i></div>
+        <div class="rctl">
+          <input class="field" id="rp-${esc(r.key)}" inputmode="numeric" placeholder="지금 몇 쪽?" aria-label="${esc(r.title)} 지금 쪽수">
+          <button class="btn sm" data-act="rpage" data-key="${esc(r.key)}">저장</button>
+          <button class="btn ghost sm" data-act="rplus" data-key="${esc(r.key)}">+10쪽</button>
+        </div>
+        <div class="rctl"><button class="pill" data-act="rdone" data-key="${esc(r.key)}">다 읽었어요!</button><button class="x" data-act="del" data-key="${esc(r.key)}">빼기</button></div>
+      </div>`;
+    }).join('') : `<div class="empty">읽고 있는 책을 넣으면 몇 쪽까지 읽었는지 남길 수 있어요.</div>`}
+    ${msg('read')}
+    <form data-form="reading" class="add">
+      <input class="field" id="rTitle" maxlength="60" placeholder="책 제목" aria-label="읽는 중인 책 제목">
+      <input class="field" id="rTotal" inputmode="numeric" placeholder="전체 쪽수" aria-label="전체 쪽수" style="flex:0 1 110px">
+      <button class="btn sm">넣기</button>
+    </form>
+  </section>`;
+}
+
 function vBooks() {
+  const sub = UI.studySub || 'book';
+  const head = `<div class="seg" role="group" aria-label="공부 고르기">
+    <button data-act="ssub" data-v="book" aria-pressed="${sub === 'book'}">책</button>
+    <button data-act="ssub" data-v="word" aria-pressed="${sub === 'word'}">영어 단어</button></div>`;
+  if (sub === 'word') return head + vWords();
   const yr = today().slice(0, 4);
   const yearN = S.books.filter(b => (b.date || '').startsWith(yr)).length;
   const monN = S.books.filter(b => (b.date || '').startsWith(today().slice(0, 7))).length;
-  return `
+  return head + vReading() + `
   <section class="card">
     <div class="mini">
       <div><span class="muted">올해 읽은 책</span><b>${yearN}권</b></div>
@@ -453,6 +791,594 @@ function vBooks() {
   </section>`;
 }
 
+/* ---------- 일정: 학교 주간학습안내 + 학원 ---------- */
+const WD_ORDER = [1, 2, 3, 4, 5, 6, 0];
+const mondayOf = s => { const d = parseD(s); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return ymd(d); };
+const schoolDay = date => { const w = S.weeks[mondayOf(date)]; return (w && (w.days || []).find(d => d.date === date)) || null; };
+const eventsOn = date => { const w = S.weeks[mondayOf(date)]; return ((w && w.events) || []).filter(e => e.date === date); };
+const acadOn = date => { const wd = parseD(date).getDay(); return (S.settings.academies || []).filter(a => (a.days || []).includes(wd)).sort((a, b) => (a.start || '').localeCompare(b.start || '')); };
+const relDay = d => d === addDays(today(), 1) ? '내일' : `${parseD(d).getDate()}일 ${WD[parseD(d).getDay()]}요일`;
+const acTime = a => (a.start || '') + (a.end ? '~' + a.end : '');
+
+/* 생일·기념일: 해마다 같은 월·일 (음력은 해마다 날짜를 바꿔 넣기) */
+const annivOn = date => { const d = parseD(date); return (S.settings.anniv || []).filter(a => +a.m === d.getMonth() + 1 && +a.d === d.getDate()); };
+function annivSoon(days) {   // 오늘부터 days 일 안에 오는 것 [{a, date, n}]
+  const out = [];
+  for (let i = 0; i <= days; i++) { const dt = addDays(today(), i); annivOn(dt).forEach(a => out.push({ a, date: dt, n: i })); }
+  return out;
+}
+const annivIcon = a => a.kind === '생일' ? '🎂' : '🎉';
+const annivText = x => x.n === 0 ? `${annivIcon(x.a)} 오늘은 ${x.a.name}${x.a.kind === '생일' ? ' 생일' : ''}이에요!`
+  :`${annivIcon(x.a)} D-${x.n} ${x.a.name}${x.a.kind === '생일' ? ' 생일' : ''} (${+x.date.slice(5, 7)}/${+x.date.slice(8)})`;
+function nextAnniv(a) {      // 다음에 오는 날까지 며칠
+  const t = parseD(today()); let y = t.getFullYear();
+  for (let k = 0; k < 2; k++, y++) { const d = new Date(y, +a.m - 1, +a.d); if (d.getMonth() === +a.m - 1 && d >= t) return Math.round((d - t) / 864e5); }
+  return 999;
+}
+
+function nextBring() {          // 앞으로 사흘 안에 챙길 것이 있는 첫날
+  for (let i = 1; i <= 3; i++) {
+    const d = addDays(today(), i), sd = schoolDay(d);
+    const items = [...((sd && sd.bring) || []), ...acadOn(d).filter(a => a.bring).map(a => `${a.name}: ${a.bring}`)];
+    if (items.length) return { date: d, items };
+  }
+  return null;
+}
+
+const WEEK_PROMPT = `이 사진은 초등학교 주간학습안내야. 아래 JSON 모양 그대로, 설명 없이 JSON 만 답해 줘.
+학교 이름·반·선생님 이름 같은 개인정보는 넣지 마.
+{"app":"bonaDiary-week","start":"그 주 월요일 YYYY-MM-DD",
+ "times":["1교시 시간 예: 09:00~09:40", "2교시 시간", ...],
+ "days":[{"date":"YYYY-MM-DD",
+   "periods":[{"n":교시 숫자,"subj":"과목","what":"배울 내용 (☞ 는 · 로, 여러 줄은 · 로 이어서)","page":"쪽수 (없으면 빈칸)","test":평가·수행평가면 true 아니면 false}],
+   "bring":["그날 준비물 하나씩"]}],
+ "notes":["가정통신에서 꼭 알아야 할 내용 한 줄씩"],
+ "events":[{"date":"YYYY-MM-DD","text":"행사나 평가 짧게"}]}`;
+
+const MEAL_PROMPT = `이 사진은 초등학교 한 달 급식표야. 아래 JSON 모양 그대로, 설명 없이 JSON 만 답해 줘.
+학교 이름·전화번호 같은 정보는 넣지 마. 급식이 있는 날만 넣어 줘.
+{"app":"bonaDiary-meal","month":"YYYY-MM",
+ "days":[{"date":"YYYY-MM-DD","tag":"그날 이름이 있으면 (예: 생일축하날), 없으면 빈칸",
+   "menu":[{"name":"음식 이름 (알레르기 번호 괄호는 빼고)","al":[알레르기 번호 숫자들]}],
+   "kcal":에너지 숫자}]}`;
+
+const isD = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
+const cleanStr = (v, max) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
+function parseLoose(raw) {
+  const txt = String(raw || '').trim();
+  try { return JSON.parse(txt); } catch (e) {
+    const a = txt.indexOf('{'), b = txt.lastIndexOf('}');
+    if (a >= 0 && b > a) try { return JSON.parse(txt.slice(a, b + 1)); } catch (e2) {}
+  }
+  return null;
+}
+function parseMeals(j) {
+  if (!j || typeof j !== 'object') return null;
+  const out = [];
+  for (const m of (Array.isArray(j.meals) ? j.meals : [j])) {
+    if (!m || !Array.isArray(m.days) || !Array.isArray((m.days[0] || {}).menu)) continue;
+    const days = m.days.filter(d => d && isD(d.date) && Array.isArray(d.menu)).slice(0, 31).map(d => ({
+      date: d.date, tag: cleanStr(d.tag, 30), kcal: Math.round((+d.kcal || 0) * 10) / 10,
+      menu: d.menu.filter(x => x && (x.name || typeof x === 'string')).slice(0, 12).map(x => typeof x === 'string' ? { name: cleanStr(x, 40), al: [] }
+        : { name: cleanStr(x.name, 40), al: (Array.isArray(x.al) ? x.al : []).map(n => parseInt(n, 10)).filter(n => n >= 1 && n <= 19).slice(0, 19) }),
+    })).filter(d => d.menu.length);
+    if (!days.length) continue;
+    const months = [...new Set(days.map(d => d.date.slice(0, 7)))];
+    for (const mo of months) out.push({ kind: 'meal', month: mo, at: new Date().toISOString(), days: days.filter(d => d.date.startsWith(mo)) });
+  }
+  return out.length ? out : null;
+}
+const mealOn = date => { const m = S.meals[date.slice(0, 7)]; return (m && m.days.find(d => d.date === date)) || null; };
+function mealHtml(ml) {
+  const mine = S.settings.allergy || [];
+  return `${ml.tag ? `<span class="meal-tag">${esc(ml.tag)}</span>` : ''}
+    <ul class="meal">${ml.menu.map(x => {
+      const hit = (x.al || []).filter(n => mine.includes(n));
+      return `<li class="${hit.length ? 'warn' : ''}">${esc(x.name)}${hit.length ? ` <span class="tag">주의: ${hit.map(n => ALLERGENS[n]).join(', ')}</span>` : ''}</li>`;
+    }).join('')}</ul>`;
+}
+
+function parseWeeks(raw) {
+  const j = typeof raw === 'object' && raw ? raw : parseLoose(raw);
+  if (!j || typeof j !== 'object') return null;
+  const str = cleanStr;
+  const list = (v, max, n) => (Array.isArray(v) ? v : v ? String(v).split(/[,\n]/) : []).map(x => str(x, max)).filter(Boolean).slice(0, n);
+  const out = [];
+  for (const w of (Array.isArray(j.weeks) ? j.weeks : [j])) {
+    if (!w || !Array.isArray(w.days) || Array.isArray((w.days[0] || {}).menu)) continue;
+    const days = w.days.filter(d => d && isD(d.date)).slice(0, 7).map(d => ({
+      date: d.date,
+      periods: (Array.isArray(d.periods) ? d.periods : []).filter(p => p && typeof p === 'object').slice(0, 10)
+        .map((p, i) => ({ n: Math.min(10, Math.max(1, parseInt(p.n, 10) || i + 1)), subj: str(p.subj, 30), what: str(p.what, 240), page: str(p.page, 40), test: p.test === true })),
+      bring: list(d.bring, 60, 20),
+    }));
+    if (!days.length) continue;
+    out.push({
+      kind: 'week', start: mondayOf(isD(w.start) ? w.start : days[0].date), at: new Date().toISOString(),
+      times: list(w.times, 20, 10), days,
+      notes: list(w.notes, 300, 20),
+      events: (Array.isArray(w.events) ? w.events : []).filter(e => e && isD(e.date)).map(e => ({ date: e.date, text: str(e.text, 80) })).filter(e => e.text).slice(0, 20),
+    });
+  }
+  return out.length ? out : null;
+}
+
+function copyText(text, key, okMsg) {
+  const done = () => { UI.copyOut = ''; UI.msg = { [key]: okMsg }; UI.good = key; render(); };
+  const fail = () => { UI.copyOut = text; UI.copyKey = key; UI.msg = {}; render(); const t = document.getElementById('cpOut'); if (t) { t.focus(); t.select(); } };
+  try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+}
+const copyBox = key => UI.copyOut && UI.copyKey === key ? `<textarea class="field" id="cpOut" rows="4" readonly style="font-size:.75rem">${esc(UI.copyOut)}</textarea><p class="note">위 글을 길게 눌러 전체 선택 → 복사하세요.</p>` : '';
+
+function schedCardToday() {
+  const t = today(), sd = schoolDay(t), ac = acadOn(t), ev = eventsOn(t), nb = nextBring(), ml = mealOn(t), an = annivSoon(7);
+  const anyData = Object.keys(S.weeks).length || Object.keys(S.meals).length || (S.settings.academies || []).length || (S.settings.anniv || []).length;
+  if (!anyData) return `<section class="card"><div class="card-h"><h2>오늘 일정</h2></div><div class="empty">일정 탭에서 학교 시간표·급식표·학원·생일을 넣어 보세요.</div></section>`;
+  if (!sd && !ac.length && !ev.length && !nb && !ml && !an.length) return '';
+  return `<section class="card">
+    <div class="card-h"><h2>오늘 일정</h2><button class="pill" data-act="gosched">자세히</button></div>
+    ${an.map(x => `<div class="${x.n === 0 ? 'cheer' : 'evt'}">${esc(annivText(x))}</div>`).join('')}
+    ${ev.map(e => `<div class="evt">${esc(e.text)}</div>`).join('')}
+    ${sd && sd.periods.length ? `<div class="subj">${sd.periods.map(p => `<span class="sp ${p.test ? 'test' : ''}"><b>${p.n}</b>${esc(p.subj)}${p.test ? ' (평가)' : ''}</span>`).join('')}</div>` : ''}
+    ${ac.length ? `<ul class="list">${ac.map(a => `<li class="row"><span class="amt">${esc(acTime(a))}</span><span class="grow">${esc(a.name)}</span></li>`).join('')}</ul>` : ''}
+    ${ml ? `<div style="display:grid;gap:6px"><b style="font-family:var(--display);font-weight:400">오늘 급식</b>${mealHtml(ml)}</div>` : ''}
+    ${nb ? `<div class="bring"><b>${relDay(nb.date)} 챙길 것</b>${nb.items.map(esc).join(', ')}</div>` : ''}
+  </section>`;
+}
+
+function vSched() {
+  const t = today();
+  if (!UI.wk) {
+    const wd = parseD(t).getDay(), weekend = wd === 0 || wd === 6;
+    UI.wk = weekend ? addDays(mondayOf(t), 7) : mondayOf(t);
+    UI.sday = weekend ? UI.wk : t;
+  }
+  const w = S.weeks[UI.wk], times = (w && w.times) || [];
+  const dates = Array.from({ length: 7 }, (_, i) => addDays(UI.wk, i));
+  const sd = schoolDay(UI.sday), ac = acadOn(UI.sday), ev = eventsOn(UI.sday);
+  const sdObj = parseD(UI.sday);
+  const acs = S.settings.academies || [];
+  const weeks = Object.keys(S.weeks).sort().reverse();
+  return `
+  <div class="wkbar">
+    <button class="round" data-act="wk" data-n="-7" aria-label="지난주">${ic('left')}</button>
+    <h2>${(() => { const a = parseD(UI.wk), z = parseD(addDays(UI.wk, 6)); return `${a.getMonth() + 1}월 ${a.getDate()}일 ~ ${a.getMonth() === z.getMonth() ? '' : z.getMonth() + 1 + '월 '}${z.getDate()}일`; })()}</h2>
+    <button class="round" data-act="wk" data-n="7" aria-label="다음 주">${ic('right')}</button>
+  </div>
+  <div class="dchips" role="group" aria-label="요일 고르기">${dates.map(d => {
+    const has = !!schoolDay(d) || acadOn(d).length > 0 || annivOn(d).length > 0;
+    return `<button class="dchip ${d === t ? 'is-today' : ''}" data-act="sday" data-d="${d}" aria-pressed="${d === UI.sday}" aria-label="${longDate(d)}${has ? ', 일정 있음' : ''}"><span>${WD[parseD(d).getDay()]}</span><b>${parseD(d).getDate()}</b>${has ? '<i></i>' : ''}</button>`;
+  }).join('')}</div>
+
+  <section class="card">
+    <div class="card-h"><h2>${sdObj.getMonth() + 1}월 ${sdObj.getDate()}일 ${WD[sdObj.getDay()]}요일</h2>${UI.sday === t ? '<span class="muted">오늘</span>' : ''}</div>
+    ${annivOn(UI.sday).map(a => `<div class="cheer">${annivIcon(a)} ${esc(a.name)}${a.kind === '생일' ? ' 생일' : ''}</div>`).join('')}
+    ${ev.map(e => `<div class="evt">${esc(e.text)}</div>`).join('')}
+    ${sd || ac.length ? `<ul class="plist">
+      ${(sd ? sd.periods : []).map(p => `<li class="prow ${p.test ? 'test' : ''}"><span class="pn">${p.n}</span><div class="grow">
+        <div class="ps"><b>${esc(p.subj)}</b>${times[p.n - 1] ? `<span class="muted">${esc(times[p.n - 1])}</span>` : ''}${p.test ? '<span class="tag">평가</span>' : ''}</div>
+        ${p.what ? `<div class="pw">${esc(p.what)}</div>` : ''}${p.page ? `<div class="muted" style="font-size:.8rem">${esc(p.page)}</div>` : ''}</div></li>`).join('')}
+      ${ac.map(a => `<li class="prow ac"><span class="pn">${ic('bag')}</span><div class="grow"><div class="ps"><b>${esc(a.name)}</b><span class="muted">${esc(acTime(a))}</span></div>${a.bring ? `<div class="pw">챙길 것: ${esc(a.bring)}</div>` : ''}</div></li>`).join('')}
+    </ul>` : `<div class="empty">${w ? '이날은 학교 일정이 없어요.' : '이 주의 주간학습안내가 아직 없어요. 아래에서 넣어 주세요.'}</div>`}
+    ${sd && sd.bring.length ? `<div class="bring"><b>준비물</b>${sd.bring.map(esc).join(', ')}</div>` : ''}
+  </section>
+
+  ${(() => { const ml = mealOn(UI.sday); return ml ? `<section class="card"><div class="card-h"><h2>급식</h2>${ml.kcal ? `<span class="muted">${Math.round(ml.kcal)}kcal</span>` : ''}</div>${mealHtml(ml)}</section>` : ''; })()}
+
+  ${w && w.notes.length ? `<section class="card"><div class="card-h"><h2>이번 주 알림</h2></div><ul class="notes">${w.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+    <p class="note">진도는 학교 사정에 따라 바뀔 수 있어요.</p></section>` : ''}
+
+  <section class="card">
+    <div class="card-h"><h2>학원</h2><span class="muted">${acs.length}곳</span></div>
+    ${acs.length ? `<ul class="list">${acs.map((a, i) => `<li class="row"><div class="grow"><b style="font-family:var(--display);font-weight:400">${esc(a.name)}</b>
+      <div class="muted">${WD_ORDER.filter(x => (a.days || []).includes(x)).map(x => WD[x]).join('·')} ${esc(acTime(a))}${a.bring ? ` · ${esc(a.bring)}` : ''}</div></div>
+      <button class="x" data-act="acdel" data-i="${i}">지우기</button></li>`).join('')}</ul>` : `<div class="empty">다니는 학원을 넣으면 요일마다 시간표 아래에 보여요.</div>`}
+    <form data-form="acad" style="display:grid;gap:10px">
+      <label class="lb">학원 이름<input class="field" id="acName" maxlength="20" placeholder="예: 영어 학원"></label>
+      <div><span class="muted">가는 요일</span><div class="wdays" role="group" aria-label="가는 요일">${WD_ORDER.map(x => `<button type="button" data-act="acday" data-w="${x}" aria-pressed="${(UI.acDays || []).includes(x)}">${WD[x]}</button>`).join('')}</div></div>
+      <div class="two">
+        <label class="lb">시작<input class="field" id="acStart" type="time"></label>
+        <label class="lb">끝<input class="field" id="acEnd" type="time"></label>
+      </div>
+      <label class="lb">챙길 것 (없으면 비워 두기)<input class="field" id="acBring" maxlength="40" placeholder="예: 단어장, 교재"></label>
+      ${msg('acad')}
+      <button class="btn">학원 넣기</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>생일·기념일</h2><span class="muted">${(S.settings.anniv || []).length}개</span></div>
+    ${(S.settings.anniv || []).length ? `<ul class="list">${S.settings.anniv.map((a, i) => ({ a, i, n: nextAnniv(a) })).sort((x, y) => x.n - y.n).map(({ a, i, n }) => `<li class="row">
+      <span aria-hidden="true">${annivIcon(a)}</span>
+      <div class="grow"><b style="font-family:var(--display);font-weight:400">${esc(a.name)}</b> <span class="muted">${a.m}월 ${a.d}일</span></div>
+      <span class="amt" style="color:var(--berry)">${n === 0 ? '오늘!' : n < 999 ? 'D-' + n : ''}</span>
+      <button class="x" data-act="andel" data-i="${i}">지우기</button></li>`).join('')}</ul>` : `<div class="empty">가족·친구 생일을 넣으면 일주일 전부터 오늘 화면에 알려 줘요.</div>`}
+    <form data-form="anniv" style="display:grid;gap:10px">
+      <div class="seg" role="group" aria-label="종류">
+        <button type="button" data-act="ankind" data-v="생일" aria-pressed="${(UI.anKind || '생일') === '생일'}">생일</button>
+        <button type="button" data-act="ankind" data-v="기념일" aria-pressed="${UI.anKind === '기념일'}">기념일</button>
+      </div>
+      <label class="lb">${(UI.anKind || '생일') === '생일' ? '누구 생일? (이름만)' : '무슨 날?'}<input class="field" id="anName" maxlength="16" placeholder="${(UI.anKind || '생일') === '생일' ? '예: 엄마' : '예: 우리 가족 여행 간 날'}"></label>
+      <div class="two">
+        <label class="lb">월<select class="field" id="anM">${Array.from({ length: 12 }, (_, k) => `<option value="${k + 1}">${k + 1}월</option>`).join('')}</select></label>
+        <label class="lb">일<select class="field" id="anD">${Array.from({ length: 31 }, (_, k) => `<option value="${k + 1}">${k + 1}일</option>`).join('')}</select></label>
+      </div>
+      ${msg('anniv')}
+      <button class="btn">넣기</button>
+      <p class="note">음력 생일은 해마다 바뀌니 그해 양력 날짜로 넣어 주세요. 핸드폰 알림(소리)은 안 오고, 앱을 열면 보여요.</p>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>주간학습안내·급식표 넣기</h2></div>
+    <ol class="notes">
+      <li>알맞은 <b>부탁 글 복사</b>를 눌러요.</li>
+      <li>Claude 앱에 <b>주간학습안내나 급식표 사진</b>과 부탁 글을 같이 보내요.</li>
+      <li>Claude가 준 글을 통째로 복사해서 아래 칸에 붙여 넣고 <b>넣기</b>.</li>
+    </ol>
+    <div class="pills"><button class="btn ghost sm" data-act="wkprompt">주간학습안내 부탁 글 복사</button><button class="btn ghost sm" data-act="mealprompt">급식표 부탁 글 복사</button></div>
+    ${copyBox('wk')}
+    <label class="lb" style="flex:none">받은 글 붙여 넣기
+      <textarea class="field" id="wkIn" rows="4" style="font-size:.75rem" placeholder='{"app":"bonaDiary-week", …'></textarea>
+    </label>
+    ${msg('wk')}
+    <div><button class="btn sm" data-act="wkadd">넣기</button></div>
+    ${weeks.length || Object.keys(S.meals).length ? `<ul class="list">${weeks.map(s => `<li class="row"><span class="grow">${shortDate(s)} ~ ${shortDate(addDays(s, 4))} 주 시간표</span><button class="x" data-act="del" data-key="w-${esc(s)}">지우기</button></li>`).join('')}${Object.keys(S.meals).sort().reverse().map(m => `<li class="row"><span class="grow">${+m.slice(5)}월 급식표 (${S.meals[m].days.length}일)</span><button class="x" data-act="del" data-key="l-${esc(m)}">지우기</button></li>`).join('')}</ul>` : ''}
+  </section>`;
+}
+
+/* ---------- 미니게임 ---------- */
+const MEMO_ICONS = ['tooth', 'book', 'pencil', 'bag', 'clock', 'heart', 'music', 'run'];
+const MATH_SEC = 60, WHACK_SEC = 30;
+const GAMES = {
+  whack: { name: '별 콕콕', ic: 'star', desc: '튀어나온 별을 콕! 벌은 피하기', unit: '점' },
+  catch: { name: '별 받기', ic: 'basket', desc: '바구니로 별 받기, 돌은 피하기', unit: '점' },
+  memo: { name: '짝 맞추기', ic: 'heart', desc: '같은 그림 두 장 찾기', unit: '번 만에' },
+  math: { name: '계산 달리기', ic: 'calc', desc: `${MATH_SEC}초 동안 셈 풀기`, unit: '문제' },
+  word: { name: '영어 단어', ic: 'pencil', desc: '내 단어장으로 뜻 맞히기', unit: '개' },
+};
+const WORD_Q = 10;
+
+function wordQs() {          // 많이 틀린 단어가 더 자주 나오게 골라 10문제
+  const ws = S.words.slice(), pick = [], want = Math.min(WORD_Q, ws.length);
+  const wt = w => Math.max(0.4, 1 + (w.wrong || 0) * 2 - (w.right || 0) * 0.5);
+  while (pick.length < want) {
+    const tot = ws.reduce((n, w) => n + wt(w), 0); let r = Math.random() * tot, i = 0;
+    for (; i < ws.length - 1; i++) { r -= wt(ws[i]); if (r <= 0) break; }
+    pick.push(ws.splice(i, 1)[0]);
+  }
+  return pick.map(w => {
+    const dir = Math.random() < 0.7 ? 'en' : 'ko';           // en: 영어 보고 뜻 고르기
+    const key = dir === 'en' ? 'ko' : 'en', ans = w[key];
+    const others = shuffle([...new Set(S.words.filter(x => x.key !== w.key).map(x => x[key]))].filter(v => v !== ans)).slice(0, 3);
+    return { w, dir, ans, opts: shuffle([ans, ...others]) };
+  });
+}
+function wordPick(k) {
+  const g = UI.game; if (!g || g.type !== 'word' || g.over) return;
+  const q = g.q, v = q.opts[k]; if (v == null) return;
+  const st = g.stats[q.w.key] || (g.stats[q.w.key] = { right: 0, wrong: 0 });
+  if (v === q.ans) { g.score++; st.right++; g.fb = '맞았어요!'; g.good = true; }
+  else { st.wrong++; g.miss.push(q.w); g.fb = `앗! ${q.w.en} = ${q.w.ko}`; g.good = false; }
+  g.i++;
+  if (g.i >= g.qs.length) { g.over = true; finishGame(); return; }
+  g.q = g.qs[g.i]; render();
+  if (g.q.dir === 'en' && UI.autoSay) speak(g.q.w.en);
+}
+let rafId = null;
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let gameTimer = null;
+
+function tasksLeft() {
+  const st = S.settings, d = dayOf(today());
+  return st.tasks.filter(t => !(d.done && d.done[t.id])).length;
+}
+const gameOpen = () => S.settings.gameLock === false || tasksLeft() === 0;
+
+function mathQ() {
+  let text, ans, near;
+  switch (rnd(0, 4)) {
+    case 0: { const a = rnd(120, 899), b = rnd(45, 99); text = `${a} + ${b}`; ans = a + b; near = 10; break; }
+    case 1: { const a = rnd(150, 900), b = rnd(25, 99); text = `${a} − ${b}`; ans = a - b; near = 10; break; }
+    case 2: { const a = rnd(12, 49), b = rnd(3, 9); text = `${a} × ${b}`; ans = a * b; near = b; break; }
+    case 3: { const b = rnd(3, 9), q = rnd(4, 15); text = `${b * q} ÷ ${b}`; ans = q; near = 1; break; }
+    default: { const a = rnd(6, 12), b = rnd(6, 12); text = `${a} × ${b}`; ans = a * b; near = a; }
+  }
+  const set = new Set([ans]);
+  const tries = shuffle([ans + 1, ans - 1, ans + near, ans - near, ans + 2, ans - 2, ans + 10, ans - 10, ans + 11]);
+  for (const v of tries) { if (set.size >= 4) break; if (v > 0) set.add(v); }
+  return { text, ans, opts: shuffle([...set]) };
+}
+
+function startGame(type) {
+  stopTimer();
+  if (type === 'memo') {
+    const cards = shuffle([...MEMO_ICONS, ...MEMO_ICONS]).map(ic => ({ ic, open: false, done: false }));
+    UI.game = { type, cards, first: null, lock: false, moves: 0, found: 0, over: false };
+  } else if (type === 'math') {
+    UI.game = { type, end: Date.now() + MATH_SEC * 1000, q: mathQ(), score: 0, wrong: 0, fb: '', over: false };
+    gameTimer = setInterval(tickMath, 250);
+  } else if (type === 'whack') {
+    const now = Date.now();
+    UI.game = { type, end: now + WHACK_SEC * 1000, holes: Array(9).fill(null), score: 0, stars: 0, bees: 0, next: now + 600, over: false };
+    gameTimer = setInterval(tickWhack, 50);
+  } else if (type === 'word') {
+    if (S.words.length < 4) { render(); return; }
+    const qs = wordQs();
+    UI.game = { type, qs, i: 0, q: qs[0], score: 0, miss: [], stats: {}, fb: '', over: false };
+  } else if (type === 'catch') {
+    UI.game = { type, score: 0, stars: 0, hearts: 0, lives: 3, items: [], pops: [], bx: null, tx: null, t: 0, next: 0.6, last: 0, flash: 0, over: false };
+  }
+  render(); window.scrollTo(0, 0);
+  if (type === 'catch') rafId = requestAnimationFrame(loopCatch);
+}
+function stopTimer() {
+  if (gameTimer) { clearInterval(gameTimer); gameTimer = null; }
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+}
+
+/* 별 콕콕: 3×3 구멍, 별 +1 · 벌 −2, 30초, 갈수록 빨라짐 */
+function tickWhack() {
+  const g = UI.game; if (!g || g.type !== 'whack' || g.over) { stopTimer(); return; }
+  const now = Date.now(), left = Math.max(0, g.end - now), f = 1 - left / (WHACK_SEC * 1000);
+  const t = document.getElementById('gTime'), bar = document.getElementById('gBar');
+  if (t) t.textContent = Math.ceil(left / 1000) + '초';
+  if (bar) bar.style.width = (left / (WHACK_SEC * 10)) + '%';
+  if (left <= 0) { g.over = true; stopTimer(); finishGame(); return; }
+  g.holes.forEach((h, i) => { if (h && h.until <= now) g.holes[i] = null; });
+  const active = g.holes.filter(h => h && (h.kind === 'star' || h.kind === 'bee')).length;
+  if (now >= g.next && active < 1 + Math.floor(f * 3)) {
+    const empty = g.holes.map((h, i) => h ? -1 : i).filter(i => i >= 0);
+    if (empty.length) {
+      const i = empty[rnd(0, empty.length - 1)];
+      g.holes[i] = { kind: Math.random() < 0.22 ? 'bee' : 'star', until: now + 1000 - 450 * f };
+    }
+    g.next = now + (750 - 400 * f) * (0.7 + Math.random() * 0.6);
+  }
+  drawHoles();
+}
+function holeHtml(h) {
+  if (!h) return '';
+  if (h.kind === 'star') return ic('star', 'fill');
+  if (h.kind === 'bee') return ic('bee');
+  return h.kind === 'hit' ? '+1' : '−2';
+}
+function drawHoles() {
+  const g = UI.game; if (!g || g.type !== 'whack') return;
+  g.holes.forEach((h, i) => {
+    const b = document.getElementById('wh-' + i); if (!b) return;
+    const k = h ? h.kind : '';
+    if (b.dataset.k === k) return;
+    b.dataset.k = k; b.className = 'hole ' + k; b.innerHTML = holeHtml(h);
+    b.setAttribute('aria-label', `${i + 1}번 구멍${k === 'star' ? ', 별!' : k === 'bee' ? ', 벌' : ''}`);
+  });
+  const s = document.getElementById('gScore'); if (s) s.textContent = g.score;
+}
+function whackHit(i) {
+  const g = UI.game; if (!g || g.type !== 'whack' || g.over) return;
+  const h = g.holes[i]; if (!h) return;
+  const now = Date.now();
+  if (h.kind === 'star') { g.score++; g.stars++; g.holes[i] = { kind: 'hit', until: now + 250 }; }
+  else if (h.kind === 'bee') { g.score = Math.max(0, g.score - 2); g.bees++; g.holes[i] = { kind: 'ouch', until: now + 400 }; }
+  drawHoles();
+}
+
+/* 별 받기: 바구니를 움직여 별 +1 · 하트 +3, 돌에 맞으면 목숨 −1 (3개) */
+function catchColors() {
+  const cs = getComputedStyle(document.documentElement), v = n => cs.getPropertyValue(n).trim();
+  return { paper: v('--paper'), sun: v('--sun'), berry: v('--berry'), onBerry: v('--on-berry'), ink: v('--ink'), mint: v('--mint') };
+}
+const HEART = typeof Path2D !== 'undefined' ? new Path2D('M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z') : null;
+function loopCatch(ts) {
+  const g = UI.game; if (!g || g.type !== 'catch' || g.over) { rafId = null; return; }
+  const cv = document.getElementById('cv');
+  if (!cv || !cv.clientWidth) { rafId = requestAnimationFrame(loopCatch); return; }
+  const W = cv.clientWidth, H = cv.clientHeight, dpr = window.devicePixelRatio || 1;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const dt = g.last ? Math.min(50, ts - g.last) / 1000 : 0; g.last = ts; g.t += dt;
+  if (!g.col) g.col = catchColors();
+  const bw = Math.max(60, W * 0.24), bh = 22, by = H - bh - 10;
+  if (g.bx == null) { g.bx = g.tx = W / 2; }
+  g.tx = Math.max(bw / 2, Math.min(W - bw / 2, g.tx));
+  g.bx += (g.tx - g.bx) * Math.min(1, dt * 20);
+  const lv = Math.min(1, g.t / 60);
+  g.next -= dt;
+  if (g.next <= 0) {
+    const r = Math.random(), kind = r < 0.27 ? 'rock' : r < 0.37 ? 'heart' : 'star';
+    g.items.push({ kind, x: 20 + Math.random() * (W - 40), y: -20, r: kind === 'rock' ? 15 : 14, v: H * (0.38 + 0.5 * lv) * (0.85 + Math.random() * 0.3) });
+    g.next = 0.95 - 0.55 * lv;
+  }
+  for (const it of g.items) {
+    it.y += it.v * dt;
+    if (!it.gone && it.y + it.r >= by && it.y - it.r <= by + bh && Math.abs(it.x - g.bx) < bw / 2 + it.r * 0.4) {
+      it.gone = true;
+      if (it.kind === 'rock') { g.lives--; g.flash = 0.35; g.pops.push({ x: it.x, y: by - 10, t: 0.7, txt: '앗!', c: g.col.berry }); }
+      else if (it.kind === 'heart') { g.score += 3; g.hearts++; g.pops.push({ x: it.x, y: by - 10, t: 0.7, txt: '+3', c: g.col.berry }); }
+      else { g.score++; g.stars++; g.pops.push({ x: it.x, y: by - 10, t: 0.7, txt: '+1', c: g.col.mint }); }
+    }
+  }
+  g.items = g.items.filter(it => !it.gone && it.y - it.r < H);
+  g.pops.forEach(p => { p.t -= dt; p.y -= 40 * dt; }); g.pops = g.pops.filter(p => p.t > 0);
+  g.flash = Math.max(0, g.flash - dt);
+
+  const ctx = cv.getContext('2d'), c = g.col;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  if (g.flash) { ctx.fillStyle = c.berry; ctx.globalAlpha = g.flash * 0.5; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  for (const it of g.items) {
+    if (it.kind === 'star') {
+      ctx.beginPath();
+      for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, rr = k % 2 ? it.r * 0.45 : it.r; ctx.lineTo(it.x + Math.cos(a) * rr, it.y + Math.sin(a) * rr); }
+      ctx.closePath(); ctx.fillStyle = c.sun; ctx.fill();
+    } else if (it.kind === 'heart' && HEART) {
+      const s = it.r / 8; ctx.save(); ctx.translate(it.x - 12 * s, it.y - 12 * s); ctx.scale(s, s); ctx.fillStyle = c.berry; ctx.fill(HEART); ctx.restore();
+    } else {
+      ctx.beginPath(); ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2); ctx.fillStyle = '#7D8894'; ctx.fill();
+      ctx.beginPath(); ctx.arc(it.x - 4, it.y - 3, 3, 0, Math.PI * 2); ctx.arc(it.x + 5, it.y + 4, 2.2, 0, Math.PI * 2); ctx.fillStyle = '#5B6570'; ctx.fill();
+    }
+  }
+  const bx0 = g.bx - bw / 2;
+  ctx.fillStyle = c.berry;
+  ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx0, by, bw, bh, 7); else ctx.rect(bx0, by, bw, bh); ctx.fill();
+  ctx.strokeStyle = c.onBerry; ctx.globalAlpha = 0.45; ctx.lineWidth = 2;
+  for (let x = bx0 + 12; x < bx0 + bw - 6; x += 12) { ctx.beginPath(); ctx.moveTo(x, by + 5); ctx.lineTo(x, by + bh - 5); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+  ctx.font = '20px Jua, sans-serif'; ctx.textAlign = 'center';
+  for (const p of g.pops) { ctx.globalAlpha = Math.min(1, p.t * 2); ctx.fillStyle = p.c; ctx.fillText(p.txt, p.x, p.y); }
+  ctx.globalAlpha = 1;
+
+  const s = document.getElementById('gScore'); if (s) s.textContent = g.score;
+  const l = document.getElementById('gLife'); if (l) { l.textContent = '♥'.repeat(Math.max(0, g.lives)) + '♡'.repeat(Math.max(0, 3 - g.lives)); l.setAttribute('aria-label', `목숨 ${Math.max(0, g.lives)}개`); }
+  if (g.lives <= 0) { g.over = true; rafId = null; finishGame(); return; }
+  rafId = requestAnimationFrame(loopCatch);
+}
+function catchMoveTo(clientX) {
+  const g = UI.game, cv = document.getElementById('cv'); if (!g || g.type !== 'catch' || !cv) return;
+  g.tx = clientX - cv.getBoundingClientRect().left;
+}
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest('[data-act=whit]'); if (h) { e.preventDefault(); whackHit(+h.dataset.i); return; }
+  if (e.target.id === 'cv') { try { e.target.setPointerCapture(e.pointerId); } catch (err) {} catchMoveTo(e.clientX); }
+});
+document.addEventListener('pointermove', e => { if (e.target.id === 'cv' && (e.buttons || e.pointerType !== 'mouse')) catchMoveTo(e.clientX); });
+document.addEventListener('keydown', e => {
+  const g = UI.game; if (!g || g.type !== 'catch' || g.over) return;
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const cv = document.getElementById('cv'); if (!cv) return;
+  e.preventDefault();
+  if (g.tx == null) g.tx = cv.clientWidth / 2;
+  g.tx += (e.key === 'ArrowLeft' ? -1 : 1) * cv.clientWidth * 0.12;
+});
+
+function tickMath() {
+  const g = UI.game; if (!g || g.type !== 'math' || g.over) { stopTimer(); return; }
+  const left = Math.max(0, g.end - Date.now());
+  const t = document.getElementById('gTime'), bar = document.getElementById('gBar');
+  if (t) t.textContent = Math.ceil(left / 1000) + '초';
+  if (bar) bar.style.width = (left / (MATH_SEC * 10)) + '%';
+  if (left <= 0) { g.over = true; stopTimer(); finishGame(); }
+}
+
+function finishGame() {
+  const g = UI.game, gs = { ...S.games, kind: 'games' }, key = g.type + 'Best';
+  const val = g.type === 'memo' ? g.moves : g.score;
+  g.newBest = g.type === 'memo' ? (!gs[key] || val < gs[key]) : val > (gs[key] || 0);
+  if (g.newBest) gs[key] = val;
+  gs.plays = (gs.plays || 0) + 1;
+  const map = { games: gs };
+  if (g.type === 'word') for (const [k, s] of Object.entries(g.stats)) {   // 단어마다 맞힘·틀림 횟수
+    const w = docs[k]; if (w) map[k] = { ...w, right: (w.right || 0) + s.right, wrong: (w.wrong || 0) + s.wrong };
+  }
+  putMany(map);       // 저장 + 다시 그리기
+}
+
+function memoFlip(i) {
+  const g = UI.game; if (!g || g.type !== 'memo' || g.lock || g.over) return;
+  const c = g.cards[i]; if (!c || c.open || c.done) return;
+  c.open = true;
+  if (g.first === null) { g.first = i; render(); return; }
+  const a = g.cards[g.first]; g.moves++;
+  if (a.ic === c.ic) {
+    a.done = c.done = true; a.open = c.open = false; g.first = null; g.found++;
+    if (g.found === MEMO_ICONS.length) { g.over = true; finishGame(); return; }
+    render(); return;
+  }
+  g.lock = true; render();
+  setTimeout(() => {
+    if (UI.game !== g) return;
+    a.open = c.open = false; g.first = null; g.lock = false; render();
+  }, 850);
+}
+
+function mathPick(v) {
+  const g = UI.game; if (!g || g.type !== 'math' || g.over) return;
+  if (Date.now() >= g.end) { tickMath(); return; }
+  if (v === g.q.ans) { g.score++; g.fb = '맞았어요!'; g.good = true; }
+  else { g.wrong++; g.fb = `앗! ${g.q.text} = ${g.q.ans}`; g.good = false; }
+  g.q = mathQ(); render();
+}
+
+function vGame() {
+  const g = UI.game, gs = S.games;
+  if (!g) {
+    const open = gameOpen(), left = tasksLeft();
+    return `
+    <section class="card">
+      <div class="card-h"><h2>미니게임</h2><span class="muted">한 판은 1~2분이면 끝나요</span></div>
+      ${open ? '' : `<div class="lock">오늘 할 일 ${left}개가 남았어요.<br>다 하면 게임이 열려요!</div>`}
+      <div class="games">${Object.entries(GAMES).map(([t, x]) => `
+        <div class="gcard">${ic(x.ic)}<h3>${x.name}</h3>
+          <span class="muted">${x.desc}</span>
+          <span class="muted">${t === 'word' && S.words.length < 4 ? `공부 탭에서 단어를 4개 넣으면 열려요 (지금 ${S.words.length}개)` : `최고: ${gs[t + 'Best'] ? `<b class="num">${gs[t + 'Best']}</b>${x.unit}` : '아직 없음'}`}</span>
+          <button class="btn sm" data-act="gstart" data-g="${t}" ${open && (t !== 'word' || S.words.length >= 4) ? '' : 'disabled'}>시작</button></div>`).join('')}
+      </div>
+    </section>`;
+  }
+  const G = GAMES[g.type];
+  const bar = `<div class="card-h"><h2>${G.name}</h2><button class="pill" data-act="gquit">그만하기</button></div>`;
+  if (g.over) {
+    const main = {
+      memo: () => `<span class="num">${g.moves}번</span><span>만에 다 찾았어요!</span>`,
+      math: () => `<span class="num">${g.score}문제</span><span>맞혔어요!${g.wrong ? ` (틀린 것 ${g.wrong}개)` : ''}</span>`,
+      whack: () => `<span class="num">${g.score}점</span><span>별 ${g.stars}개 콕!${g.bees ? ` 벌에 ${g.bees}번 쏘였어요` : ' 벌은 다 피했어요'}</span>`,
+      catch: () => `<span class="num">${g.score}점</span><span>별 ${g.stars}개${g.hearts ? `, 하트 ${g.hearts}개` : ''} 받았어요!</span>`,
+      word: () => `<span class="num">${g.qs.length}개 중 ${g.score}개</span><span>맞혔어요!</span>
+        ${g.miss.length ? `<div style="justify-self:stretch;text-align:left"><b style="font-family:var(--display);font-weight:400">다시 볼 단어</b><ul class="list" style="margin-top:6px">${g.miss.map(w => `<li class="row">${canSpeak() ? `<button class="say" data-act="say" data-key="${esc(w.key)}" aria-label="${esc(w.en)} 소리 듣기">🔊</button>` : ''}<span class="grow"><span class="word-en">${esc(w.en)}</span> <span class="muted">${esc(w.ko)}</span></span></li>`).join('')}</ul></div>` : ''}`,
+    }[g.type]();
+    return `<section class="card">${bar}
+      <div class="result" role="status">${main}
+        ${g.newBest ? `<div class="cheer">최고 기록이에요!</div>` : `<span class="muted">최고 기록 ${gs[g.type + 'Best'] || 0}${G.unit}</span>`}
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px"><button class="btn" data-act="gstart" data-g="${g.type}">한 판 더</button><button class="btn ghost" data-act="gquit">게임 고르기</button></div>
+      </div></section>`;
+  }
+  if (g.type === 'word') {
+    const q = g.q;
+    return `<section class="card">${bar}
+      <div class="gstat"><span>문제 <span class="num">${g.i + 1} / ${g.qs.length}</span></span><span>맞힌 것 <span class="num">${g.score}</span></span></div>
+      <div class="bar"><i style="width:${g.i / g.qs.length * 100}%"></i></div>
+      <div class="wq" aria-live="polite"><span class="muted">${q.dir === 'en' ? '무슨 뜻일까요?' : '영어로 뭘까요?'}</span>
+        <span class="big">${esc(q.dir === 'en' ? q.w.en : q.w.ko)}</span>
+        ${q.dir === 'en' && canSpeak() ? `<button class="pill" data-act="gsay">🔊 소리 듣기</button>` : ''}</div>
+      <div class="opts words">${q.opts.map((v, k) => `<button class="btn" id="wo-${k}" data-act="wpick" data-k="${k}">${esc(v)}</button>`).join('')}</div>
+      <p class="fb ${g.fb ? (g.good ? 'good' : 'bad') : ''}" role="status">${esc(g.fb)}</p>
+    </section>`;
+  }
+  if (g.type === 'whack') {
+    const left = Math.max(0, g.end - Date.now());
+    return `<section class="card">${bar}
+      <div class="gstat"><span>남은 시간 <span class="num" id="gTime">${Math.ceil(left / 1000)}초</span></span><span>점수 <span class="num" id="gScore">${g.score}</span></span></div>
+      <div class="bar"><i id="gBar" style="width:${left / (WHACK_SEC * 10)}%;transition:width .1s linear"></i></div>
+      <div class="holes">${g.holes.map((h, i) => `<button class="hole ${h ? h.kind : ''}" id="wh-${i}" data-k="${h ? h.kind : ''}" data-act="whit" data-i="${i}" aria-label="${i + 1}번 구멍">${holeHtml(h)}</button>`).join('')}</div>
+      <p class="note" style="text-align:center">노란 별은 +1, 벌을 누르면 −2</p>
+    </section>`;
+  }
+  if (g.type === 'catch') {
+    return `<section class="card">${bar}
+      <div class="gstat"><span>점수 <span class="num" id="gScore">${g.score}</span></span><span class="lives num" id="gLife" aria-label="목숨 ${g.lives}개">${'♥'.repeat(g.lives)}${'♡'.repeat(3 - g.lives)}</span></div>
+      <canvas id="cv" tabindex="0" aria-label="별 받기 놀이판. 손가락으로 끌거나 왼쪽·오른쪽 화살표로 바구니를 움직여요"></canvas>
+      <p class="note" style="text-align:center">손가락으로 바구니를 끌어요 · 별 +1 · 하트 +3 · 돌은 피하기!</p>
+    </section>`;
+  }
+  if (g.type === 'memo') {
+    return `<section class="card">${bar}
+      <div class="gstat"><span>뒤집은 횟수 <span class="num">${g.moves}</span></span><span>찾은 짝 <span class="num">${g.found} / ${MEMO_ICONS.length}</span></span></div>
+      <div class="memo">${g.cards.map((c, i) => {
+        const show = c.open || c.done;
+        return `<button class="mcard ${c.done ? 'done' : c.open ? 'open' : ''}" id="mc-${i}" data-act="mflip" data-i="${i}" aria-label="${i + 1}번 카드${show ? '' : ', 뒤집힘'}">${show ? ic(c.ic) : ic('star', 'back')}</button>`;
+      }).join('')}</div>
+    </section>`;
+  }
+  const left = Math.max(0, g.end - Date.now());
+  return `<section class="card">${bar}
+    <div class="gstat"><span>남은 시간 <span class="num" id="gTime">${Math.ceil(left / 1000)}초</span></span><span>맞힌 문제 <span class="num">${g.score}</span></span></div>
+    <div class="bar"><i id="gBar" style="width:${left / (MATH_SEC * 10)}%;transition:width .25s linear"></i></div>
+    <div class="qbox" aria-live="polite">${esc(g.q.text)} = ?</div>
+    <div class="opts">${g.q.opts.map((v, k) => `<button class="btn" id="op-${k}" data-act="mpick" data-v="${v}">${v}</button>`).join('')}</div>
+    <p class="fb ${g.fb ? (g.good ? 'good' : 'bad') : ''}" role="status">${esc(g.fb)}</p>
+  </section>`;
+}
+
 function vLog() {
   const st = S.settings, t = today(), N = 14;
   const dates = Array.from({ length: N }, (_, i) => addDays(t, i - N + 1));
@@ -461,7 +1387,10 @@ function vLog() {
     const on = !!(S.days[d] && S.days[d].done && S.days[d].done[task.id]);
     return `<td class="${on ? 'on' : ''}" aria-label="${on ? '함' : '안 함'}">${on ? ic('star', 'fill') : ''}</td>`;
   }).join('')}</tr>`).join('');
-  const studyRow = `<tr><th class="rowh" scope="row">공부(분)</th>${dates.map(d => `<td class="n">${(S.days[d] && S.days[d].study) || ''}</td>`).join('')}</tr>`;
+  const studyRow = `<tr><th class="rowh" scope="row">공부(분)</th>${dates.map(d => `<td class="n">${(S.days[d] && S.days[d].study) || ''}</td>`).join('')}</tr>`
+    + `<tr><th class="rowh" scope="row">읽은 쪽</th>${dates.map(d => `<td class="n">${(S.days[d] && S.days[d].read) || ''}</td>`).join('')}</tr>`
+    + `<tr><th class="rowh" scope="row">기분</th>${dates.map(d => { const x = S.days[d], m = x && x.mood; return `<td class="emo" ${m ? `aria-label="${MOODS[m - 1].t}" title="${esc((x.note || MOODS[m - 1].t))}"` : ''}>${m ? MOODS[m - 1].e : ''}</td>`; }).join('')}</tr>`;
+  const notes = dates.slice().reverse().map(d => S.days[d]).filter(x => x && (x.note || x.mood)).slice(0, 7);
 
   const ym = t.slice(0, 7);
   const mDays = Object.values(S.days).filter(d => d.date.startsWith(ym));
@@ -488,6 +1417,10 @@ function vLog() {
     <div class="tbl-wrap"><table class="grid"><thead><tr><th></th>${head}</tr></thead><tbody>${rows}${studyRow}</tbody></table></div>
   </section>
   <section class="card">
+    <div class="card-h"><h2>한 줄 일기</h2><span class="muted">최근 2주</span></div>
+    ${notes.length ? `<ul class="list">${notes.map(x => `<li class="row"><span class="muted num" style="width:42px">${shortDate(x.date)}</span><span aria-hidden="true">${x.mood ? MOODS[x.mood - 1].e : ''}</span><span class="grow">${esc(x.note || (x.mood ? MOODS[x.mood - 1].t : ''))}</span></li>`).join('')}</ul>` : `<div class="empty">오늘 탭에서 기분을 고르고 한 줄 일기를 써 보세요.</div>`}
+  </section>
+  <section class="card">
     <div class="card-h"><h2>받은 보상</h2></div>
     ${S.rewards.length ? `<ul class="list">${S.rewards.slice(0, 20).map(r => `<li class="row"><span class="muted num" style="width:42px">${shortDate(r.date)}</span><span class="grow">${esc(r.name)}</span><span class="amt" style="color:var(--sun-ink)">★ ${r.cost}</span></li>`).join('')}</ul>` : `<div class="empty">스티커를 모아 보상을 받으면 여기 남아요.</div>`}
   </section>`;
@@ -495,7 +1428,16 @@ function vLog() {
 
 function vSet() {
   const st = S.settings;
+  const cur = st.theme || 'A';
   return `
+  <section class="card">
+    <div class="card-h"><h2>테마</h2><span class="muted">마음대로 바꿔도 기록은 그대로예요</span></div>
+    <div class="skins" role="group" aria-label="테마 고르기">${SKINS.map(s => `<button class="skin" data-act="skin" data-v="${s.k}" aria-pressed="${cur === s.k}">
+      <span class="sw" aria-hidden="true">${s.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span>${s.k}. ${s.name}</button>`).join('')}</div>
+    <button class="skin" data-act="skin" data-v="auto" aria-pressed="${cur === 'auto'}" style="justify-items:stretch">매일 바뀌기
+      <small>네 가지가 하루씩 돌아가며 나와요${cur === 'auto' ? ` · 오늘은 ${skinToday()}. ${SKINS.find(s => s.k === skinToday()).name}` : ''}</small></button>
+  </section>
+
   <section class="card">
     <div class="card-h"><h2>매일 할 일</h2><span class="muted">그림을 누르면 바뀌어요</span></div>
     <ul class="list">${st.tasks.map((t, i) => `
@@ -528,6 +1470,19 @@ function vSet() {
   </section>
 
   <section class="card">
+    <div class="card-h"><h2>알레르기</h2><span class="muted">고르면 급식에 '주의'가 떠요</span></div>
+    <div class="pills" role="group" aria-label="알레르기 고르기">${ALLERGENS.map((n, i) => i ? `<button class="pill" data-act="allergy" data-n="${i}" aria-pressed="${(st.allergy || []).includes(i)}">${n}</button>` : '').join('')}</div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>미니게임</h2></div>
+    <div class="seg" role="group" aria-label="게임이 열리는 때">
+      <button data-act="glock" data-v="on" aria-pressed="${st.gameLock !== false}">할 일 다 하면 열기</button>
+      <button data-act="glock" data-v="off" aria-pressed="${st.gameLock === false}">항상 열기</button>
+    </div>
+  </section>
+
+  <section class="card">
     <div class="card-h"><h2>백업</h2></div>
     <p class="note">기록은 이 핸드폰 브라우저에만 저장돼요. 브라우저 기록을 지우거나 핸드폰을 바꾸면 사라지니, 가끔 <b>백업 복사</b>를 눌러 엄마·아빠에게 카톡으로 보내 두세요.</p>
     <div class="add">
@@ -545,7 +1500,8 @@ function vSet() {
 }
 
 /* ---------- 누르기 ---------- */
-function saveDay(d) { put('d-' + d.date, { kind: 'day', date: d.date, done: d.done || {}, study: d.study || 0, hw: d.hw || [] }); }
+const dayBody = d => ({ ...d, kind: 'day', date: d.date, done: d.done || {}, study: d.study || 0, hw: d.hw || [] });
+function saveDay(d) { put('d-' + d.date, dayBody(d)); }
 function saveSettings(st) { put('settings', { ...clone(st), kind: 'settings' }); }
 
 function arm(btn, label, fn) {
@@ -557,7 +1513,7 @@ function arm(btn, label, fn) {
 
 document.addEventListener('click', e => {
   const tab = e.target.closest('nav.tabs button');
-  if (tab) { UI.tab = tab.dataset.tab; UI.msg = {}; render(); window.scrollTo(0, 0); return; }
+  if (tab) { stopTimer(); UI.game = null; UI.tab = tab.dataset.tab; UI.msg = {}; UI.copyOut = ''; if (UI.tab === 'sched') UI.wk = null; render(); window.scrollTo(0, 0); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act;
   const d = clone(dayOf(UI.date));
@@ -574,6 +1530,85 @@ document.addEventListener('click', e => {
       arm(b, '한 번 더 누르면 받아요', () => put(uid('r'), { kind: 'reward', date: today(), at: new Date().toISOString(), name: st.reward, cost: goal }));
       break;
     }
+    case 'ssub': UI.studySub = b.dataset.v; UI.msg = {}; render(); break;
+    case 'say': { const w = S.words.find(x => x.key === b.dataset.key); if (w) speak(w.en); break; }
+    case 'gsay': if (UI.game && UI.game.type === 'word') speak(UI.game.q.w.en); break;
+    case 'allwords': UI.allWords = !UI.allWords; render(); break;
+    case 'wbulk': {
+      const t = document.getElementById('wBulk'), have = new Set(S.words.map(w => w.en.toLowerCase())), add = {};
+      let n = 0, skip = 0; const now = Date.now();
+      for (const line of t.value.split(/\n/)) {
+        const s = line.trim(); if (!s) continue;
+        const m = s.match(/^(.+?)\s*[-:=\t]\s*(.+)$/) || s.match(/^([A-Za-z][A-Za-z' .]*?)\s+([^A-Za-z].*)$/);
+        if (!m) { skip++; continue; }
+        const en = m[1].trim().slice(0, 40), ko = m[2].trim().slice(0, 40);
+        if (!en || !ko || have.has(en.toLowerCase())) { skip++; continue; }
+        have.add(en.toLowerCase());
+        add[uid('v')] = { kind: 'word', en, ko, at: new Date(now + n).toISOString(), right: 0, wrong: 0 }; n++;
+        if (n >= 300) break;
+      }
+      UI.msg = { word: n ? `단어 ${n}개를 넣었어요.${skip ? ` (${skip}줄은 겹치거나 모양이 달라서 뺐어요)` : ''}` : '넣을 단어를 못 찾았어요. 한 줄에 "apple 사과" 처럼 적어 주세요.' };
+      UI.good = n ? 'word' : null;
+      if (n) { t.value = ''; putMany(add); } else render();
+      break;
+    }
+    case 'rpage': case 'rplus': {
+      const r = S.reading.find(x => x.key === b.dataset.key); if (!r) break;
+      let p;
+      if (act === 'rplus') p = r.page + 10;
+      else { const i = document.getElementById('rp-' + r.key); p = parseInt((i.value || '').replace(/\D/g, ''), 10); if (isNaN(p)) { i.focus(); break; } i.value = ''; }
+      p = Math.max(0, Math.min(r.total, p));
+      const delta = p - r.page, map = { [r.key]: { kind: 'reading', title: r.title, total: r.total, page: p, start: r.start, at: new Date().toISOString() } };
+      if (delta > 0) { const t = clone(dayOf(today())); t.read = (t.read || 0) + delta; map['d-' + t.date] = dayBody(t); }
+      UI.msg = { read: p >= r.total ? `${r.title} 끝까지 읽었어요! [다 읽었어요!]를 눌러 책장에 넣어요.` : delta > 0 ? `${delta}쪽 읽었어요.` : '쪽수를 바꿨어요.' }; UI.good = 'read';
+      putMany(map);
+      break;
+    }
+    case 'rdone': {
+      const r = S.reading.find(x => x.key === b.dataset.key); if (!r) break;
+      UI.finishing = r.key; UI.msg = { book: '별점과 한 줄 느낌을 적고 [책 넣기]를 눌러요.' }; UI.good = 'book';
+      render();
+      const ti = document.getElementById('bTitle'); if (ti) { ti.value = r.title; ti.scrollIntoView({ block: 'center' }); }
+      break;
+    }
+    case 'skin': { const st = clone(S.settings); st.theme = b.dataset.v; saveSettings(st); break; }
+    case 'ankind': UI.anKind = b.dataset.v; render(); break;
+    case 'andel': arm(b, '정말?', () => { const st = clone(S.settings); st.anniv.splice(+b.dataset.i, 1); saveSettings(st); }); break;
+    case 'mcat': UI.mcat = b.dataset.v; render(); break;
+    case 'mmonth': UI.mMonth = b.dataset.v > today().slice(0, 7) ? today().slice(0, 7) : b.dataset.v; render(); break;
+    case 'mood': { const n = +b.dataset.n; d.mood = d.mood === n ? 0 : n; if (!d.mood) delete d.mood; saveDay(d); break; }
+    case 'gosched': UI.tab = 'sched'; UI.wk = null; UI.msg = {}; render(); window.scrollTo(0, 0); break;
+    case 'wk': { const n = +b.dataset.n; UI.wk = addDays(UI.wk, n); UI.sday = addDays(UI.sday, n); UI.msg = {}; render(); break; }
+    case 'sday': UI.sday = b.dataset.d; render(); break;
+    case 'acday': { const x = +b.dataset.w, s = new Set(UI.acDays || []); s.has(x) ? s.delete(x) : s.add(x); UI.acDays = [...s]; render(); break; }
+    case 'acdel': arm(b, '정말?', () => { const st = clone(S.settings); st.academies.splice(+b.dataset.i, 1); saveSettings(st); }); break;
+    case 'wkprompt': copyText(WEEK_PROMPT, 'wk', '부탁 글을 복사했어요. Claude 앱에 사진과 같이 보내 주세요.'); break;
+    case 'mealprompt': copyText(MEAL_PROMPT, 'wk', '급식 부탁 글을 복사했어요. Claude 앱에 급식표 사진과 같이 보내 주세요.'); break;
+    case 'wkadd': {
+      const t = document.getElementById('wkIn'), j = parseLoose(t.value);
+      const ms = parseMeals(j), ws = ms ? null : parseWeeks(j);
+      if (!ws && !ms) { UI.msg = { wk: 'Claude가 준 글이 아니거나 잘렸어요. { 부터 } 까지 통째로 붙여 넣어 주세요.' }; UI.good = null; render(); break; }
+      if (ws) {
+        for (const w of ws) docs['w-' + w.start] = w;
+        UI.wk = ws[0].start; UI.sday = (ws[0].days.find(d => d.date >= today()) || ws[0].days[0]).date;
+        UI.msg = { wk: `${ws.map(w => shortDate(w.start) + ' 주').join(', ')} 시간표를 넣었어요.` };
+      } else {
+        for (const m of ms) docs['l-' + m.month] = m;
+        UI.msg = { wk: `${ms.map(m => +m.month.slice(5) + '월').join(', ')} 급식표를 넣었어요 (${ms.reduce((n, m) => n + m.days.length, 0)}일).` };
+      }
+      S = build(docs); localSave();
+      t.value = ''; UI.good = 'wk';
+      render(); window.scrollTo(0, 0);
+      break;
+    }
+    case 'allergy': { const st = clone(S.settings), n = +b.dataset.n, s = new Set(st.allergy || []); s.has(n) ? s.delete(n) : s.add(n); st.allergy = [...s].sort((a, c) => a - c); saveSettings(st); break; }
+    case 'gstart': if (gameOpen()) startGame(b.dataset.g); else render(); break;
+    case 'gquit': stopTimer(); UI.game = null; render(); break;
+    case 'mflip': memoFlip(+b.dataset.i); break;
+    case 'wpick': wordPick(+b.dataset.k); break;
+    case 'whit': if (e.detail === 0) whackHit(+b.dataset.i); break;   // 키보드(Enter·Space)만, 손가락·마우스는 pointerdown 에서
+    case 'mpick': mathPick(+b.dataset.v); break;
+    case 'glock': { const st = clone(S.settings); st.gameLock = b.dataset.v === 'on'; saveSettings(st); break; }
     case 'mtype': UI.moneyType = b.dataset.v; UI.msg = {}; render(); break;
     case 'mquick': { const i = document.getElementById('mAmt'); i.value = String((parseInt(i.value.replace(/\D/g, ''), 10) || 0) + +b.dataset.n); break; }
     case 'mclear': document.getElementById('mAmt').value = ''; break;
@@ -617,14 +1652,59 @@ document.addEventListener('submit', e => {
     if (n > 10000000) { UI.msg = { money: '천만 원보다 큰 돈은 적을 수 없어요' }; render(); return; }
     const memo = mi.value.trim();
     UI.msg = {}; ai.value = ''; mi.value = '';
-    put(uid('m'), { kind: 'money', date: today(), at: new Date().toISOString(), type: UI.moneyType, amount: n, memo });
+    const rec = { kind: 'money', date: today(), at: new Date().toISOString(), type: UI.moneyType, amount: n, memo };
+    if (UI.moneyType === 'out') rec.cat = UI.mcat || '간식';
+    put(uid('m'), rec);
   } else if (kind === 'book') {
     const ti = document.getElementById('bTitle'), ni = document.getElementById('bNote');
     const title = ti.value.trim();
     if (!title) { UI.msg = { book: '책 제목을 적어 주세요' }; render(); document.getElementById('bTitle').focus(); return; }
     const note = ni.value.trim(), stars = UI.stars;
     UI.msg = {}; UI.stars = 0; ti.value = ''; ni.value = '';
-    put(uid('b'), { kind: 'book', date: today(), at: new Date().toISOString(), title, stars, note });
+    const map = { [uid('b')]: { kind: 'book', date: today(), at: new Date().toISOString(), title, stars, note } };
+    if (UI.finishing && docs[UI.finishing]) map[UI.finishing] = null;   // 읽는 중 → 책장으로
+    UI.finishing = null;
+    putMany(map);
+  } else if (kind === 'word') {
+    const ei = document.getElementById('wEn'), ki = document.getElementById('wKo');
+    const en = ei.value.trim(), ko = ki.value.trim();
+    if (!en || !ko) { UI.msg = { word: '영어와 뜻을 둘 다 적어 주세요' }; UI.good = null; render(); document.getElementById(en ? 'wKo' : 'wEn').focus(); return; }
+    if (S.words.some(w => w.en.toLowerCase() === en.toLowerCase())) { UI.msg = { word: `${en} 은(는) 이미 단어장에 있어요` }; UI.good = null; render(); return; }
+    ei.value = ''; ki.value = ''; UI.msg = { word: `${en} 넣었어요.` }; UI.good = 'word';
+    put(uid('v'), { kind: 'word', en, ko, at: new Date().toISOString(), right: 0, wrong: 0 });
+    document.getElementById('wEn').focus();
+  } else if (kind === 'reading') {
+    const ti = document.getElementById('rTitle'), pi = document.getElementById('rTotal');
+    const title = ti.value.trim(), total = parseInt(pi.value.replace(/\D/g, ''), 10);
+    if (!title || !total || total > 5000) { UI.msg = { read: !title ? '책 제목을 적어 주세요' : '전체 쪽수를 숫자로 적어 주세요 (예: 180)' }; UI.good = null; render(); return; }
+    ti.value = ''; pi.value = ''; UI.msg = {};
+    put(uid('rd'), { kind: 'reading', title, total, page: 0, start: today(), at: new Date().toISOString() });
+  } else if (kind === 'anniv') {
+    const ni = document.getElementById('anName'), name = ni.value.trim();
+    const m = +document.getElementById('anM').value, d = +document.getElementById('anD').value;
+    const maxD = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][m - 1];
+    const err = !name ? '이름을 적어 주세요' : d > maxD ? `${m}월에는 ${d}일이 없어요` : '';
+    if (err) { UI.msg = { anniv: err }; UI.good = null; render(); return; }
+    ni.value = ''; UI.msg = { anniv: `${name} ${m}월 ${d}일 넣었어요.` }; UI.good = 'anniv';
+    const st = clone(S.settings); st.anniv = st.anniv || [];
+    st.anniv.push({ id: uid('n'), name, m, d, kind: UI.anKind || '생일' });
+    saveSettings(st);
+  } else if (kind === 'note') {
+    const i = f.querySelector('input'), d = clone(dayOf(UI.date)), v = i.value.trim();
+    if (v) d.note = v; else delete d.note;
+    UI.msg = { note: v ? '한 줄 일기를 저장했어요.' : '한 줄 일기를 지웠어요.' }; UI.good = 'note';
+    saveDay(d);
+  } else if (kind === 'acad') {
+    const name = document.getElementById('acName').value.trim(), days = UI.acDays || [];
+    const start = document.getElementById('acStart').value, end = document.getElementById('acEnd').value;
+    const bring = document.getElementById('acBring').value.trim();
+    const err = !name ? '학원 이름을 적어 주세요' : !days.length ? '가는 요일을 하나 이상 눌러 주세요' : !start ? '시작 시간을 넣어 주세요' : end && end <= start ? '끝 시간이 시작보다 늦어야 해요' : '';
+    if (err) { UI.msg = { acad: err }; UI.good = null; render(); return; }
+    ['acName', 'acStart', 'acEnd', 'acBring'].forEach(id => { document.getElementById(id).value = ''; });
+    UI.acDays = []; UI.msg = {};
+    const st = clone(S.settings); st.academies = st.academies || [];
+    st.academies.push({ id: uid('a'), name, days: days.slice().sort(), start, end, bring });
+    saveSettings(st);
   } else if (kind === 'task') {
     const i = document.getElementById('newTask'), name = i.value.trim(); if (!name) { i.focus(); return; }
     const st = clone(S.settings); st.tasks.push({ id: uid('t'), name, ic: 'star' });
@@ -635,6 +1715,14 @@ document.addEventListener('submit', e => {
 // 설정 칸: 다 고치고 칸을 벗어날 때 한 번 저장
 document.addEventListener('change', e => {
   const el = e.target;
+  if (el.id && el.id.startsWith('note-')) {      // 저장을 안 눌러도 칸을 벗어나면 저장
+    const date = el.id.slice(5), d = clone(dayOf(date)), v = el.value.trim();
+    if ((d.note || '') === v) return;
+    if (v) d.note = v; else delete d.note;
+    UI.msg = { note: v ? '한 줄 일기를 저장했어요.' : '한 줄 일기를 지웠어요.' }; UI.good = 'note';
+    put('d-' + date, dayBody(d));
+    return;
+  }
   if (el.dataset.tname != null) {
     const st = clone(S.settings), v = el.value.trim(); if (!v) { el.value = st.tasks[+el.dataset.tname].name; return; }
     st.tasks[+el.dataset.tname].name = v; saveSettings(st);
