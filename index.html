@@ -192,6 +192,7 @@ nav.tabs button[aria-current="page"]{color:var(--berry);background:var(--berry-b
 .hole.ouch{border-color:var(--berry);background:var(--berry-bg);color:var(--berry);animation:shake .3s}
 @keyframes popup{from{transform:translateY(40%) scale(.4)}to{transform:none}}
 @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#rv{display:block;width:100%;height:min(46vh,320px);border-radius:14px;background:var(--paper);border:1.5px solid var(--line);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #cv{display:block;width:100%;height:min(56vh,440px);border-radius:14px;background:var(--paper);border:1.5px solid var(--line);touch-action:none}
 .lives{color:var(--berry);letter-spacing:2px}
 
@@ -277,6 +278,22 @@ details.more summary{cursor:pointer;color:var(--soft);font-size:.9rem;padding:4p
 .mnav{display:flex;align-items:center;gap:6px}
 .mnav .round{width:36px;height:36px}
 .task span,.stk-txt h2{word-break:keep-all}
+
+/* 11-15 공간 줄이기: 스티커 카드 한 줄 + 할 일은 알약 칩 */
+.stickers{padding:10px 14px;column-gap:12px}
+.big-star,.big-star svg{width:46px;height:46px}
+.big-star b{font-size:1.05rem;padding-top:3px}
+.stk-txt{gap:5px}
+.stk-txt h2{font-size:1rem;line-height:1.3}
+.stickers .stk-txt>.muted{display:none}
+.stickers .bar{height:10px}
+.tasks{display:flex;flex-wrap:wrap;gap:7px}
+.task{min-height:42px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 10px;border-radius:999px;font-size:.92rem;text-align:left}
+.task .ic{width:18px;height:18px}
+.task .stamp{position:static;transform:none;order:3;width:16px;height:16px}
+.task[aria-pressed="true"] .stamp{animation:popin .3s ease-out}
+@keyframes popin{0%{transform:scale(0)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+:root[data-skin] .tasks .task{border-radius:999px}
 
 /* ===== 테마 (설정에서 고름: html[data-skin] = A 지금 · B 파스텔 · C 다꾸 · D 하늘) ===== */
 /* B. 파스텔 스티커북 */
@@ -400,7 +417,7 @@ details.more summary{cursor:pointer;color:var(--soft);font-size:.9rem;padding:4p
 </div></nav>
 
 <script>
-const APP_VER = '11-14 d';   // 고칠 때마다 바꿔서 핸드폰에 새 판이 왔는지 확인
+const APP_VER = '11-15 c';   // 고칠 때마다 바꿔서 핸드폰에 새 판이 왔는지 확인
 
 /* ---------- 날짜 ---------- */
 const pad = n => String(n).padStart(2, '0');
@@ -436,6 +453,7 @@ const DEFAULT_SETTINGS = {
   allergy: [],               // 급식 알레르기 번호 (1~19)
   anniv: [],                 // 생일·기념일: { id, name, m, d, kind:'생일'|'기념일' }
   theme: 'A',                // A 지금 · B 파스텔 · C 다꾸 · D 하늘 · auto 매일 바뀌기
+  gameLimit: 30,             // 하루 게임 시간(분), 0 = 제한 없음
 };
 const SKINS = [
   { k: 'A', name: '방안 공책', sw: ['#EEF5F2', '#B8294F', '#137A63', '#E9A30C'] },
@@ -976,9 +994,11 @@ function vSched() {
 
   <section class="card">
     <div class="card-h"><h2>학원</h2><span class="muted">${acs.length}곳</span></div>
-    ${acs.length ? `<ul class="list">${acs.map((a, i) => `<li class="row"><div class="grow"><b style="font-family:var(--display);font-weight:400">${esc(a.name)}</b>
+    ${acs.length ? `<ul class="list">${acs.map((a, i) => `<li class="row" ${UI.acEdit === a.id ? 'style="border-color:var(--berry);background:var(--berry-bg)"' : ''}><div class="grow"><b style="font-family:var(--display);font-weight:400">${esc(a.name)}</b>
       <div class="muted">${WD_ORDER.filter(x => (a.days || []).includes(x)).map(x => WD[x]).join('·')} ${esc(acTime(a))}${a.bring ? ` · ${esc(a.bring)}` : ''}</div></div>
-      <button class="x" data-act="acdel" data-i="${i}">지우기</button></li>`).join('')}</ul>` : `<div class="empty">다니는 학원을 넣으면 요일마다 시간표 아래에 보여요.</div>`}
+      <button class="x" data-act="acedit" data-i="${i}" aria-label="${esc(a.name)} 고치기">고치기</button>
+      <button class="x" data-act="acdel" data-i="${i}" aria-label="${esc(a.name)} 지우기">지우기</button></li>`).join('')}</ul>` : `<div class="empty">다니는 학원을 넣으면 요일마다 시간표 아래에 보여요.</div>`}
+    ${UI.acEdit ? `<div class="evt" id="acEditing">✏️ ${esc((acs.find(a => a.id === UI.acEdit) || {}).name || '')} 고치는 중 — 바꾸고 아래 [고친 내용 저장]을 눌러요</div>` : ''}
     <form data-form="acad" style="display:grid;gap:10px">
       <label class="lb">학원 이름<input class="field" id="acName" maxlength="20" placeholder="예: 영어 학원"></label>
       <div><span class="muted">가는 요일</span><div class="wdays" role="group" aria-label="가는 요일">${WD_ORDER.map(x => `<button type="button" data-act="acday" data-w="${x}" aria-pressed="${(UI.acDays || []).includes(x)}">${WD[x]}</button>`).join('')}</div></div>
@@ -988,7 +1008,7 @@ function vSched() {
       </div>
       <label class="lb">챙길 것 (없으면 비워 두기)<input class="field" id="acBring" maxlength="40" placeholder="예: 단어장, 교재"></label>
       ${msg('acad')}
-      <button class="btn">학원 넣기</button>
+      ${UI.acEdit ? `<div class="two"><button type="button" class="btn ghost" data-act="accancel">취소</button><button class="btn">고친 내용 저장</button></div>` : `<button class="btn">학원 넣기</button>`}
     </form>
   </section>
 
@@ -1037,6 +1057,7 @@ function vSched() {
 const MEMO_ICONS = ['tooth', 'book', 'pencil', 'bag', 'clock', 'heart', 'music', 'run'];
 const MATH_SEC = 60, WHACK_SEC = 30;
 const GAMES = {
+  run: { name: '별빛 달리기', ic: 'run', desc: '톡 눌러 점프! 벌은 밑으로 쏙', unit: '점' },
   whack: { name: '별 콕콕', ic: 'star', desc: '튀어나온 별을 콕! 벌은 피하기', unit: '점' },
   catch: { name: '별 받기', ic: 'basket', desc: '바구니로 별 받기, 돌은 피하기', unit: '점' },
   memo: { name: '짝 맞추기', ic: 'heart', desc: '같은 그림 두 장 찾기', unit: '번 만에' },
@@ -1080,7 +1101,32 @@ function tasksLeft() {
   const st = S.settings, d = dayOf(today());
   return st.tasks.filter(t => !(d.done && d.done[t.id])).length;
 }
-const gameOpen = () => S.settings.gameLock === false || tasksLeft() === 0;
+/* 하루 게임 시간: 실제로 게임 화면에서 노는 동안만 1초씩 세고(결과 화면·앱 내려 둠은 안 셈), 날짜별 day.game(초)에 저장 */
+let playSec = 0;                                   // 아직 저장 안 한 초
+const gameLimitMin = () => { const v = S.settings.gameLimit; return v == null ? 30 : +v || 0; };
+const playedSec = () => { const d = S.days[today()]; return ((d && d.game) || 0) + playSec; };
+const gameTimeLeft = () => gameLimitMin() ? gameLimitMin() * 60 - playedSec() : Infinity;
+function flushPlay() {                             // 다시 그리지 않고 저장만
+  if (!playSec) return;
+  const d = clone(dayOf(today())); d.game = (d.game || 0) + playSec; playSec = 0;
+  docs['d-' + d.date] = dayBody(d); S = build(docs); localSave();
+}
+setInterval(() => {
+  const g = UI.game; if (!g || g.over || document.hidden || UI.tab !== 'game') return;
+  playSec++;
+  const left = gameTimeLeft();
+  const el = document.getElementById('gLeft');
+  if (el) el.textContent = left <= 60 && left > 0 ? `${Math.ceil(left)}초 남았어요` : '';
+  if (playSec >= 15) flushPlay();
+  if (left <= 0) {                                 // 다 썼음: 게임 끝내고 잠금 화면으로
+    flushPlay(); stopTimer(); UI.game = null;
+    UI.msg = { game: `오늘 게임 시간 ${gameLimitMin()}분을 다 썼어요. 내일 또 해요!` }; UI.good = null;
+    render(); window.scrollTo(0, 0);
+  }
+}, 1000);
+document.addEventListener('visibilitychange', () => { if (document.hidden) flushPlay(); });
+
+const gameOpen = () => (S.settings.gameLock === false || tasksLeft() === 0) && gameTimeLeft() > 0;
 
 function mathQ() {
   let text, ans, near;
@@ -1113,11 +1159,15 @@ function startGame(type) {
     if (S.words.length < 4) { render(); return; }
     const qs = wordQs();
     UI.game = { type, qs, i: 0, q: qs[0], score: 0, miss: [], stats: {}, fb: '', over: false };
+  } else if (type === 'run') {
+    UI.game = { type, started: false, t: 0, dist: 0, speed: 0, y: null, vy: 0, jumps: 0, lives: 3, inv: 0, flash: 0,
+      obs: [], stars: [], pops: [], next: 0, score: 0, starN: 0, last: 0, over: false };
   } else if (type === 'catch') {
     UI.game = { type, score: 0, stars: 0, hearts: 0, lives: 3, items: [], pops: [], bx: null, tx: null, t: 0, next: 0.6, last: 0, flash: 0, over: false };
   }
   render(); window.scrollTo(0, 0);
   if (type === 'catch') rafId = requestAnimationFrame(loopCatch);
+  if (type === 'run') rafId = requestAnimationFrame(loopRun);
 }
 function stopTimer() {
   if (gameTimer) { clearInterval(gameTimer); gameTimer = null; }
@@ -1239,12 +1289,155 @@ function loopCatch(ts) {
   if (g.lives <= 0) { g.over = true; rafId = null; finishGame(); return; }
   rafId = requestAnimationFrame(loopCatch);
 }
+/* 별빛 달리기: 톡 = 점프(공중에서 한 번 더 = 2단 점프), 돌·책 더미는 뛰어넘고 벌은 밑으로, 별 모으기, 목숨 3 */
+function runJump() {
+  const g = UI.game; if (!g || g.type !== 'run' || g.over) return;
+  if (!g.started) { g.started = true; g.last = 0; }
+  if (g.jumps < 2) { g.vy = -(g.jv || 700) * (g.jumps ? 0.85 : 1); g.jumps++; }
+}
+function spawnRun(g, W, gy, k) {
+  const r = Math.random(), lv = Math.min(1, g.t / 60);
+  let o;
+  if (r < 0.18 + 0.14 * lv) o = { kind: 'bee', w: 30 * k, h: 24 * k, y: gy - (72 + Math.random() * 18) * k };
+  else if (r < 0.55) o = { kind: 'books', w: 26 * k, h: 48 * k, y: gy - 48 * k };
+  else o = { kind: 'rock', w: 32 * k, h: 26 * k, y: gy - 26 * k };
+  o.x = W + 20; o.ph = Math.random() * 6; g.obs.push(o);
+  if (Math.random() < 0.65) {            // 장애물 위(벌이면 아래)에 별 줄
+    const n = 3 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < n; i++) {
+      const c = i - (n - 1) / 2, up = 1 - Math.abs(c) / (n / 2 + 0.5);
+      g.stars.push({ x: o.x + o.w / 2 + c * 26 * k, y: o.kind === 'bee' ? gy - 18 * k : o.y - (26 + up * 34) * k });
+    }
+  }
+  g.next = g.speed * (0.85 + Math.random() * 0.8) + 120 * k;   // 다음 장애물까지 (착지할 틈은 늘 있음)
+}
+function starPath(ctx, x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  ctx.closePath();
+}
+function loopRun(ts) {
+  const g = UI.game; if (!g || g.type !== 'run' || g.over) { rafId = null; return; }
+  const cv = document.getElementById('rv');
+  if (!cv || !cv.clientWidth) { rafId = requestAnimationFrame(loopRun); return; }
+  const W = cv.clientWidth, H = cv.clientHeight, dpr = window.devicePixelRatio || 1;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const dt = g.last ? Math.min(50, ts - g.last) / 1000 : 0; g.last = ts;
+  if (!g.col) g.col = catchColors();
+  const k = H / 300, gy = H - 34 * k, ps = 32 * k, px = W * 0.16;
+  g.jv = 760 * k; const grav = 2300 * k;
+  if (g.y == null) g.y = gy - ps;
+
+  if (g.started) {
+    g.t += dt;
+    g.speed = Math.min(640, 250 + g.t * 9) * k;
+    g.dist += g.speed * dt;
+    g.vy += grav * dt; g.y += g.vy * dt;
+    if (g.y >= gy - ps && g.vy >= 0) { g.y = gy - ps; g.vy = 0; g.jumps = 0; }   // 내려오는 중일 때만 착지
+    g.next -= g.speed * dt;
+    if (g.next <= 0) spawnRun(g, W, gy, k);
+    for (const o of g.obs) o.x -= g.speed * dt;
+    for (const s of g.stars) s.x -= g.speed * dt;
+    g.obs = g.obs.filter(o => o.x + o.w > -30);
+    g.stars = g.stars.filter(s => !s.got && s.x > -30);
+    if (g.inv > 0) g.inv -= dt;
+    const pb = { x: px + 5 * k, y: g.y + 4 * k, w: ps - 10 * k, h: ps - 6 * k };
+    for (const o of g.obs) {
+      if (o.hit || g.inv > 0) continue;
+      const oy = o.kind === 'bee' ? o.y + Math.sin(g.t * 6 + o.ph) * 5 * k : o.y;
+      if (pb.x < o.x + o.w - 4 * k && pb.x + pb.w > o.x + 4 * k && pb.y < oy + o.h - 4 * k && pb.y + pb.h > oy + 4 * k) {
+        o.hit = true; g.lives--; g.inv = 1.2; g.flash = 0.35;
+        g.pops.push({ x: px + ps / 2, y: g.y - 6 * k, t: 0.8, txt: '앗!', c: g.col.berry });
+      }
+    }
+    for (const s of g.stars) {
+      if (!s.got && Math.abs(s.x - (px + ps / 2)) < ps / 2 + 8 * k && Math.abs(s.y - (g.y + ps / 2)) < ps / 2 + 8 * k) {
+        s.got = true; g.starN++; g.pops.push({ x: s.x, y: s.y, t: 0.6, txt: '+10', c: g.col.mint });
+      }
+    }
+    g.pops.forEach(p => { p.t -= dt; p.y -= 40 * dt; }); g.pops = g.pops.filter(p => p.t > 0);
+    g.flash = Math.max(0, g.flash - dt);
+    g.score = Math.floor(g.dist / (20 * k)) + g.starN * 10;
+  }
+
+  const ctx = cv.getContext('2d'), c = g.col;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  // 먼 언덕·구름 (느리게 지나감)
+  ctx.fillStyle = c.mint; ctx.globalAlpha = 0.12;
+  for (let i = -1; i < 4; i++) { const x = ((i * 180 * k - g.dist * 0.15) % (720 * k) + 720 * k) % (720 * k) - 120 * k; ctx.beginPath(); ctx.arc(x, gy + 10 * k, 90 * k, Math.PI, 0); ctx.fill(); }
+  ctx.globalAlpha = 0.5; ctx.fillStyle = '#FFFFFF';
+  for (let i = 0; i < 3; i++) { const x = ((i * 230 * k - g.dist * 0.3) % (690 * k) + 690 * k) % (690 * k) - 60 * k, y = (40 + i * 28) * k; ctx.beginPath(); ctx.arc(x, y, 14 * k, 0, 7); ctx.arc(x + 16 * k, y - 6 * k, 18 * k, 0, 7); ctx.arc(x + 34 * k, y, 13 * k, 0, 7); ctx.fill(); }
+  ctx.globalAlpha = 1;
+  // 땅
+  ctx.fillStyle = c.mint; ctx.globalAlpha = 0.18; ctx.fillRect(0, gy, W, H - gy); ctx.globalAlpha = 1;
+  ctx.fillStyle = c.mint; ctx.fillRect(0, gy, W, 3 * k);
+  ctx.globalAlpha = 0.35;
+  for (let x = -((g.dist) % (40 * k)); x < W; x += 40 * k) ctx.fillRect(x, gy + 12 * k, 16 * k, 3 * k);
+  ctx.globalAlpha = 1;
+  // 별
+  for (const s of g.stars) { starPath(ctx, s.x, s.y, 9 * k); ctx.fillStyle = c.sun; ctx.fill(); }
+  // 장애물
+  for (const o of g.obs) {
+    ctx.globalAlpha = o.hit ? 0.35 : 1;
+    if (o.kind === 'rock') {
+      ctx.fillStyle = '#7D8894'; ctx.beginPath(); ctx.ellipse(o.x + o.w / 2, o.y + o.h * 0.6, o.w / 2, o.h * 0.6, 0, Math.PI, 0); ctx.lineTo(o.x + o.w, o.y + o.h); ctx.lineTo(o.x, o.y + o.h); ctx.fill();
+      ctx.fillStyle = '#5B6570'; ctx.beginPath(); ctx.arc(o.x + o.w * 0.35, o.y + o.h * 0.55, 3 * k, 0, 7); ctx.fill();
+    } else if (o.kind === 'books') {
+      const cols = [c.berry, c.sun, c.mint], bh = o.h / 3;
+      for (let i = 0; i < 3; i++) { ctx.fillStyle = cols[i]; const off = (i % 2 ? 3 : -2) * k; ctx.fillRect(o.x + off, o.y + o.h - bh * (i + 1) + 1, o.w, bh - 2); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.fillRect(o.x + off + 3 * k, o.y + o.h - bh * (i + 1) + bh / 2 - 1, o.w - 6 * k, 2 * k); }
+    } else {
+      const oy = o.y + Math.sin(g.t * 6 + o.ph) * 5 * k, cx = o.x + o.w / 2, cy = oy + o.h / 2;
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.ellipse(cx - 4 * k, oy + 2 * k, 6 * k, 8 * k, -0.4, 0, 7); ctx.ellipse(cx + 5 * k, oy + 2 * k, 5 * k, 7 * k, 0.4, 0, 7); ctx.fill();
+      ctx.fillStyle = '#F5C24C'; ctx.beginPath(); ctx.ellipse(cx, cy + 2 * k, o.w / 2, o.h / 2.6, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = '#22314A'; ctx.fillRect(cx - 4 * k, cy - 6 * k, 3 * k, 14 * k); ctx.fillRect(cx + 3 * k, cy - 6 * k, 3 * k, 14 * k);
+      ctx.beginPath(); ctx.arc(o.x + 3 * k, cy + 1 * k, 4 * k, 0, 7); ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+  // 주인공: 리본 단 동글이 (다치면 깜빡)
+  if (!(g.inv > 0 && Math.floor(g.inv * 10) % 2)) {
+    const x = px, y = g.y, s = ps, step = g.y >= gy - ps - 0.5 && g.started ? Math.floor(g.dist / (14 * k)) % 2 : 0;
+    ctx.fillStyle = c.ink;
+    ctx.fillRect(x + s * 0.25, y + s - 2 * k + (step ? -2 * k : 0), s * 0.16, 7 * k);
+    ctx.fillRect(x + s * 0.6, y + s - 2 * k + (step ? 0 : -2 * k), s * 0.16, 7 * k);
+    ctx.fillStyle = c.berry; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, s, s, 11 * k); else ctx.rect(x, y, s, s); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x + s * 0.62, y + s * 0.42, 5 * k, 0, 7); ctx.arc(x + s * 0.86, y + s * 0.42, 4 * k, 0, 7); ctx.fill();
+    ctx.fillStyle = '#22314A'; ctx.beginPath(); ctx.arc(x + s * 0.65, y + s * 0.43, 2.4 * k, 0, 7); ctx.arc(x + s * 0.88, y + s * 0.43, 2 * k, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.arc(x + s * 0.5, y + s * 0.68, 3 * k, 0, 7); ctx.fill();
+    ctx.fillStyle = c.sun; ctx.beginPath(); ctx.moveTo(x + s * 0.3, y + 2 * k); ctx.lineTo(x + s * 0.08, y - 7 * k); ctx.lineTo(x + s * 0.1, y + 7 * k); ctx.closePath();
+    ctx.moveTo(x + s * 0.3, y + 2 * k); ctx.lineTo(x + s * 0.52, y - 7 * k); ctx.lineTo(x + s * 0.5, y + 7 * k); ctx.closePath(); ctx.fill();
+  }
+  if (g.flash) { ctx.fillStyle = c.berry; ctx.globalAlpha = g.flash * 0.4; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
+  ctx.textAlign = 'center';
+  ctx.font = `${18 * k}px Jua, sans-serif`;
+  for (const p of g.pops) { ctx.globalAlpha = Math.min(1, p.t * 2); ctx.fillStyle = p.c; ctx.fillText(p.txt, p.x, p.y); }
+  ctx.globalAlpha = 1;
+  if (!g.started) {
+    ctx.fillStyle = c.ink; ctx.font = `${22 * k}px Jua, sans-serif`; ctx.fillText('화면을 톡! 누르면 출발', W / 2, H * 0.36);
+    ctx.font = `${15 * k}px Jua, sans-serif`; ctx.fillStyle = c.berry; ctx.fillText('공중에서 한 번 더 누르면 2단 점프', W / 2, H * 0.36 + 26 * k);
+  }
+  const sc = document.getElementById('gScore'); if (sc) sc.textContent = g.score;
+  const st = document.getElementById('gStar'); if (st) st.textContent = g.starN;
+  const l = document.getElementById('gLife'); if (l) { l.textContent = '♥'.repeat(Math.max(0, g.lives)) + '♡'.repeat(Math.max(0, 3 - g.lives)); l.setAttribute('aria-label', `목숨 ${Math.max(0, g.lives)}개`); }
+  if (g.lives <= 0) { g.over = true; rafId = null; finishGame(); return; }
+  rafId = requestAnimationFrame(loopRun);
+}
+document.addEventListener('keydown', e => {
+  const g = UI.game; if (!g || g.type !== 'run' || g.over) return;
+  if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w') {
+    if (e.target.closest && e.target.closest('button') && e.key === ' ') return;   // 버튼 위 스페이스는 버튼 누르기
+    e.preventDefault(); if (!e.repeat) runJump();
+  }
+});
+
 function catchMoveTo(clientX) {
   const g = UI.game, cv = document.getElementById('cv'); if (!g || g.type !== 'catch' || !cv) return;
   g.tx = clientX - cv.getBoundingClientRect().left;
 }
 document.addEventListener('pointerdown', e => {
   const h = e.target.closest('[data-act=whit]'); if (h) { e.preventDefault(); whackHit(+h.dataset.i); return; }
+  if (e.target.id === 'rv') { e.preventDefault(); runJump(); return; }
   if (e.target.id === 'cv') { try { e.target.setPointerCapture(e.pointerId); } catch (err) {} catchMoveTo(e.clientX); }
 });
 document.addEventListener('pointermove', e => { if (e.target.id === 'cv' && (e.buttons || e.pointerType !== 'mouse')) catchMoveTo(e.clientX); });
@@ -1267,6 +1460,7 @@ function tickMath() {
 }
 
 function finishGame() {
+  flushPlay();
   const g = UI.game, gs = { ...S.games, kind: 'games' }, key = g.type + 'Best';
   const val = g.type === 'memo' ? g.moves : g.score;
   g.newBest = g.type === 'memo' ? (!gs[key] || val < gs[key]) : val > (gs[key] || 0);
@@ -1308,11 +1502,15 @@ function mathPick(v) {
 function vGame() {
   const g = UI.game, gs = S.games;
   if (!g) {
-    const open = gameOpen(), left = tasksLeft();
+    const open = gameOpen(), left = tasksLeft(), lim = gameLimitMin(), used = Math.floor(playedSec() / 60), timeOut = gameTimeLeft() <= 0;
     return `
     <section class="card">
       <div class="card-h"><h2>미니게임</h2><span class="muted">한 판은 1~2분이면 끝나요</span></div>
-      ${open ? '' : `<div class="lock">오늘 할 일 ${left}개가 남았어요.<br>다 하면 게임이 열려요!</div>`}
+      ${lim ? `<div style="display:grid;gap:6px"><div class="gstat" style="font-size:.95rem"><span>오늘 게임 시간</span><span class="num">${used}분 / ${lim}분</span></div>
+        <div class="bar" role="img" aria-label="오늘 게임 ${used}분, 하루 ${lim}분까지"><i style="width:${Math.min(100, playedSec() / (lim * 60) * 100)}%;${timeOut ? 'background:var(--berry)' : ''}"></i></div></div>` : ''}
+      ${msg('game')}
+      ${timeOut ? `<div class="lock">오늘은 게임 끝! 🌙<br>${lim}분을 다 했어요. 내일 또 만나요.</div>`
+        : open ? '' : `<div class="lock">오늘 할 일 ${left}개가 남았어요.<br>다 하면 게임이 열려요!</div>`}
       <div class="games">${Object.entries(GAMES).map(([t, x]) => `
         <div class="gcard">${ic(x.ic)}<h3>${x.name}</h3>
           <span class="muted">${x.desc}</span>
@@ -1322,13 +1520,14 @@ function vGame() {
     </section>`;
   }
   const G = GAMES[g.type];
-  const bar = `<div class="card-h"><h2>${G.name}</h2><button class="pill" data-act="gquit">그만하기</button></div>`;
+  const bar = `<div class="card-h"><h2>${G.name}</h2><span class="muted" id="gLeft" role="status" style="color:var(--berry)"></span><button class="pill" data-act="gquit">그만하기</button></div>`;
   if (g.over) {
     const main = {
       memo: () => `<span class="num">${g.moves}번</span><span>만에 다 찾았어요!</span>`,
       math: () => `<span class="num">${g.score}문제</span><span>맞혔어요!${g.wrong ? ` (틀린 것 ${g.wrong}개)` : ''}</span>`,
       whack: () => `<span class="num">${g.score}점</span><span>별 ${g.stars}개 콕!${g.bees ? ` 벌에 ${g.bees}번 쏘였어요` : ' 벌은 다 피했어요'}</span>`,
       catch: () => `<span class="num">${g.score}점</span><span>별 ${g.stars}개${g.hearts ? `, 하트 ${g.hearts}개` : ''} 받았어요!</span>`,
+      run: () => `<span class="num">${g.score}점</span><span>${Math.round(g.t)}초 동안 달리고 별 ${g.starN}개 모았어요!</span>`,
       word: () => `<span class="num">${g.qs.length}개 중 ${g.score}개</span><span>맞혔어요!</span>
         ${g.miss.length ? `<div style="justify-self:stretch;text-align:left"><b style="font-family:var(--display);font-weight:400">다시 볼 단어</b><ul class="list" style="margin-top:6px">${g.miss.map(w => `<li class="row">${canSpeak() ? `<button class="say" data-act="say" data-key="${esc(w.key)}" aria-label="${esc(w.en)} 소리 듣기">🔊</button>` : ''}<span class="grow"><span class="word-en">${esc(w.en)}</span> <span class="muted">${esc(w.ko)}</span></span></li>`).join('')}</ul></div>` : ''}`,
     }[g.type]();
@@ -1357,6 +1556,13 @@ function vGame() {
       <div class="bar"><i id="gBar" style="width:${left / (WHACK_SEC * 10)}%;transition:width .1s linear"></i></div>
       <div class="holes">${g.holes.map((h, i) => `<button class="hole ${h ? h.kind : ''}" id="wh-${i}" data-k="${h ? h.kind : ''}" data-act="whit" data-i="${i}" aria-label="${i + 1}번 구멍">${holeHtml(h)}</button>`).join('')}</div>
       <p class="note" style="text-align:center">노란 별은 +1, 벌을 누르면 −2</p>
+    </section>`;
+  }
+  if (g.type === 'run') {
+    return `<section class="card">${bar}
+      <div class="gstat"><span>점수 <span class="num" id="gScore">${g.score}</span></span><span>별 <span class="num" id="gStar">${g.starN}</span></span><span class="lives num" id="gLife" aria-label="목숨 ${g.lives}개">${'♥'.repeat(g.lives)}${'♡'.repeat(3 - g.lives)}</span></div>
+      <canvas id="rv" tabindex="0" aria-label="별빛 달리기 놀이판. 화면을 누르거나 스페이스·위 화살표로 점프, 공중에서 한 번 더 누르면 2단 점프"></canvas>
+      <p class="note" style="text-align:center">톡 = 점프 · 공중에서 또 톡 = 2단 점프 · 돌·책은 넘고 벌은 밑으로!</p>
     </section>`;
   }
   if (g.type === 'catch') {
@@ -1432,6 +1638,48 @@ function vLog() {
   </section>`;
 }
 
+/* 부모님 설정: 비밀번호 4자리(그대로 저장하지 않고 바꾼 값만 저장). 정해 두면 게임 설정·백업 되살리기는 잠금을 열어야 바뀜 */
+const pinHash = pin => { let h = 2166136261; for (const ch of 'bona-parent:' + pin) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return 'p' + h.toString(36); };
+const parentLocked = () => !!S.settings.pinHash && !UI.parentOk;
+function parentCard(st) {
+  const lim = gameLimitMin(), hasPin = !!st.pinHash;
+  const summary = `${st.gameLock === false ? '항상 열기' : '할 일 다 하면 열기'} · 하루 ${lim ? (lim === 60 ? '1시간' : lim + '분') : '제한 없음'}`;
+  if (parentLocked()) {
+    const wait = UI.pinBlock && UI.pinBlock > Date.now() ? Math.ceil((UI.pinBlock - Date.now()) / 1000) : 0;
+    return `<section class="card">
+      <div class="card-h"><h2>🔒 부모님 설정</h2><span class="muted">게임 규칙</span></div>
+      <p class="note">지금: <b>${summary}</b> · 오늘 ${Math.floor(playedSec() / 60)}분 했어요.<br>게임 규칙과 백업 되살리기는 부모님만 바꿀 수 있어요.</p>
+      <form class="add" data-form="pin">
+        <input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="부모님 비밀번호 4자리" aria-label="부모님 비밀번호 4자리" ${wait ? 'disabled' : ''}>
+        <button class="btn sm" ${wait ? 'disabled' : ''}>열기</button>
+      </form>
+      ${wait ? `<p class="err" role="alert">여러 번 틀렸어요. ${wait}초 뒤에 다시 해 주세요.</p>` : msg('pin')}
+    </section>`;
+  }
+  return `<section class="card">
+    <div class="card-h"><h2>${hasPin ? '🔓' : ''} 부모님 설정</h2>${hasPin ? '<button class="pill" data-act="pinlock">다시 잠그기</button>' : ''}</div>
+    <div><span class="muted">게임이 열리는 때</span>
+      <div class="seg" role="group" aria-label="게임이 열리는 때">
+        <button data-act="glock" data-v="on" aria-pressed="${st.gameLock !== false}">할 일 다 하면 열기</button>
+        <button data-act="glock" data-v="off" aria-pressed="${st.gameLock === false}">항상 열기</button>
+      </div></div>
+    <div><span class="muted">하루 게임 시간</span>
+      <div class="pills" role="group" aria-label="하루 게임 시간">${[[15, '15분'], [30, '30분'], [45, '45분'], [60, '1시간'], [0, '제한 없음']].map(([v, t]) => `<button class="pill" data-act="glimit" data-v="${v}" aria-pressed="${lim === v}">${t}</button>`).join('')}</div>
+      <p class="note" style="margin-top:6px">게임 화면에서 노는 시간만 세요. 오늘 ${Math.floor(playedSec() / 60)}분 했어요.</p></div>
+    <div style="display:grid;gap:8px;border-top:1.5px dashed var(--line);padding-top:12px">
+      <span class="muted">${hasPin ? '비밀번호 바꾸기' : '부모님 비밀번호 정하기 — 정해 두면 위 설정과 백업 되살리기를 아이가 못 바꿔요'}</span>
+      <form class="two" data-form="pinset">
+        <input class="field" id="pinNew" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="새 비밀번호 4자리" aria-label="새 비밀번호 4자리">
+        <input class="field" id="pinNew2" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password" placeholder="한 번 더" aria-label="새 비밀번호 한 번 더">
+        <button class="btn sm" style="grid-column:1/-1">${hasPin ? '비밀번호 바꾸기' : '비밀번호 정하고 잠그기'}</button>
+      </form>
+      ${msg('pinset')}
+      ${hasPin ? `<div><button class="x" data-act="pinoff">비밀번호 없애기</button></div>` : ''}
+      <p class="note">비밀번호를 잊으면 [백업 복사] 글을 Claude에게 보여 주세요. 비밀번호만 지운 백업으로 바꿔 드려요.</p>
+    </div>
+  </section>`;
+}
+
 function vSet() {
   const st = S.settings;
   const cur = st.theme || 'A';
@@ -1480,13 +1728,7 @@ function vSet() {
     <div class="pills" role="group" aria-label="알레르기 고르기">${ALLERGENS.map((n, i) => i ? `<button class="pill" data-act="allergy" data-n="${i}" aria-pressed="${(st.allergy || []).includes(i)}">${n}</button>` : '').join('')}</div>
   </section>
 
-  <section class="card">
-    <div class="card-h"><h2>미니게임</h2></div>
-    <div class="seg" role="group" aria-label="게임이 열리는 때">
-      <button data-act="glock" data-v="on" aria-pressed="${st.gameLock !== false}">할 일 다 하면 열기</button>
-      <button data-act="glock" data-v="off" aria-pressed="${st.gameLock === false}">항상 열기</button>
-    </div>
-  </section>
+  ${parentCard(st)}
 
   <section class="card">
     <div class="card-h"><h2>백업</h2></div>
@@ -1496,10 +1738,11 @@ function vSet() {
     </div>
     ${UI.backupText ? `<textarea class="field" id="bkOut" rows="3" readonly aria-label="백업 글" style="width:100%;font-size:.75rem">${esc(UI.backupText)}</textarea><p class="note">위 글을 길게 눌러 전체 선택 → 복사하세요.</p>` : ''}
     ${msg('bk')}
+    ${parentLocked() ? `<p class="note">🔒 백업 되살리기는 위 <b>부모님 설정</b> 잠금을 연 뒤에 할 수 있어요.</p>` : `
     <label class="lb" style="flex:none">백업 되살리기 (받아 둔 백업 글을 붙여 넣기)
       <textarea class="field" id="bkIn" rows="3" style="width:100%;font-size:.75rem" placeholder='{"settings":…'></textarea>
     </label>
-    <div><button class="btn ghost sm" data-act="brestore">되살리기</button></div>
+    <div><button class="btn ghost sm" data-act="brestore">되살리기</button></div>`}
     <p class="note">이름·학교·전화번호 같은 개인정보는 적지 않아요.</p>
   </section>
   <p class="note" style="text-align:center">판 ${APP_VER}</p>`;
@@ -1519,7 +1762,7 @@ function arm(btn, label, fn) {
 
 document.addEventListener('click', e => {
   const tab = e.target.closest('nav.tabs button');
-  if (tab) { stopTimer(); UI.game = null; UI.tab = tab.dataset.tab; UI.msg = {}; UI.copyOut = ''; if (UI.tab === 'sched') UI.wk = null; render(); window.scrollTo(0, 0); return; }
+  if (tab) { flushPlay(); stopTimer(); UI.game = null; UI.parentOk = false; UI.tab = tab.dataset.tab; UI.msg = {}; UI.copyOut = ''; UI.acEdit = null; UI.acDays = []; if (UI.tab === 'sched') UI.wk = null; render(); window.scrollTo(0, 0); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const act = b.dataset.act;
   const d = clone(dayOf(UI.date));
@@ -1587,7 +1830,24 @@ document.addEventListener('click', e => {
     case 'wk': { const n = +b.dataset.n; UI.wk = addDays(UI.wk, n); UI.sday = addDays(UI.sday, n); UI.msg = {}; render(); break; }
     case 'sday': UI.sday = b.dataset.d; render(); break;
     case 'acday': { const x = +b.dataset.w, s = new Set(UI.acDays || []); s.has(x) ? s.delete(x) : s.add(x); UI.acDays = [...s]; render(); break; }
-    case 'acdel': arm(b, '정말?', () => { const st = clone(S.settings); st.academies.splice(+b.dataset.i, 1); saveSettings(st); }); break;
+    case 'acdel': arm(b, '정말?', () => {
+      const st = clone(S.settings), gone = st.academies.splice(+b.dataset.i, 1)[0];
+      if (gone && gone.id === UI.acEdit) { UI.acEdit = null; UI.acDays = []; ['acName', 'acStart', 'acEnd', 'acBring'].forEach(id => { const x = document.getElementById(id); if (x) x.value = ''; }); }
+      saveSettings(st);
+    }); break;
+    case 'acedit': {
+      const a = (S.settings.academies || [])[+b.dataset.i]; if (!a) break;
+      UI.acEdit = a.id; UI.acDays = (a.days || []).slice(); UI.msg = {};
+      render();
+      const set = (id, v) => { const x = document.getElementById(id); if (x) x.value = v || ''; };
+      set('acName', a.name); set('acStart', a.start); set('acEnd', a.end); set('acBring', a.bring);
+      const e = document.getElementById('acEditing'); if (e) e.scrollIntoView({ block: 'start' });
+      break;
+    }
+    case 'accancel':
+      UI.acEdit = null; UI.acDays = []; UI.msg = {};
+      ['acName', 'acStart', 'acEnd', 'acBring'].forEach(id => { const x = document.getElementById(id); if (x) x.value = ''; });
+      render(); break;
     case 'wkprompt': copyText(WEEK_PROMPT, 'wk', '부탁 글을 복사했어요. Claude 앱에 사진과 같이 보내 주세요.'); break;
     case 'mealprompt': copyText(MEAL_PROMPT, 'wk', '급식 부탁 글을 복사했어요. Claude 앱에 급식표 사진과 같이 보내 주세요.'); break;
     case 'wkadd': {
@@ -1609,12 +1869,15 @@ document.addEventListener('click', e => {
     }
     case 'allergy': { const st = clone(S.settings), n = +b.dataset.n, s = new Set(st.allergy || []); s.has(n) ? s.delete(n) : s.add(n); st.allergy = [...s].sort((a, c) => a - c); saveSettings(st); break; }
     case 'gstart': if (gameOpen()) startGame(b.dataset.g); else render(); break;
-    case 'gquit': stopTimer(); UI.game = null; render(); break;
+    case 'gquit': flushPlay(); stopTimer(); UI.game = null; render(); break;
+    case 'glimit': { if (parentLocked()) break; const st = clone(S.settings); st.gameLimit = +b.dataset.v; saveSettings(st); break; }
+    case 'pinlock': UI.parentOk = false; UI.msg = {}; render(); break;
+    case 'pinoff': arm(b, '정말 없앨까요?', () => { const st = clone(S.settings); delete st.pinHash; UI.parentOk = false; UI.msg = { pinset: '비밀번호를 없앴어요. 이제 누구나 바꿀 수 있어요.' }; UI.good = 'pinset'; saveSettings(st); }); break;
     case 'mflip': memoFlip(+b.dataset.i); break;
     case 'wpick': wordPick(+b.dataset.k); break;
     case 'whit': if (e.detail === 0) whackHit(+b.dataset.i); break;   // 키보드(Enter·Space)만, 손가락·마우스는 pointerdown 에서
     case 'mpick': mathPick(+b.dataset.v); break;
-    case 'glock': { const st = clone(S.settings); st.gameLock = b.dataset.v === 'on'; saveSettings(st); break; }
+    case 'glock': { if (parentLocked()) break; const st = clone(S.settings); st.gameLock = b.dataset.v === 'on'; saveSettings(st); break; }
     case 'mtype': UI.moneyType = b.dataset.v; UI.msg = {}; render(); break;
     case 'mquick': { const i = document.getElementById('mAmt'); i.value = String((parseInt(i.value.replace(/\D/g, ''), 10) || 0) + +b.dataset.n); break; }
     case 'mclear': document.getElementById('mAmt').value = ''; break;
@@ -1631,6 +1894,7 @@ document.addEventListener('click', e => {
       break;
     }
     case 'brestore': {
+      if (parentLocked()) break;
       const t = document.getElementById('bkIn'), raw = (t.value || '').trim();
       let data = null;
       try { const j = JSON.parse(raw); if (j && j.app === 'bonaDiary' && j.docs && typeof j.docs === 'object') data = j.docs; } catch (err) {}
@@ -1685,6 +1949,23 @@ document.addEventListener('submit', e => {
     if (!title || !total || total > 5000) { UI.msg = { read: !title ? '책 제목을 적어 주세요' : '전체 쪽수를 숫자로 적어 주세요 (예: 180)' }; UI.good = null; render(); return; }
     ti.value = ''; pi.value = ''; UI.msg = {};
     put(uid('rd'), { kind: 'reading', title, total, page: 0, start: today(), at: new Date().toISOString() });
+  } else if (kind === 'pin') {
+    const i = document.getElementById('pinIn'), v = (i.value || '').trim(); i.value = '';
+    if (UI.pinBlock && UI.pinBlock > Date.now()) { render(); return; }
+    if (pinHash(v) === S.settings.pinHash) { UI.parentOk = true; UI.pinFails = 0; UI.msg = { pinset: '잠금을 열었어요. 다른 탭으로 가면 다시 잠겨요.' }; UI.good = 'pinset'; render(); return; }
+    UI.pinFails = (UI.pinFails || 0) + 1;
+    if (UI.pinFails >= 5) { UI.pinFails = 0; UI.pinBlock = Date.now() + 60000; setTimeout(() => { if (UI.tab === 'set') render(); }, 60500); }
+    UI.msg = { pin: '비밀번호가 달라요.' }; UI.good = null; render();
+    const n = document.getElementById('pinIn'); if (n && !n.disabled) n.focus();
+  } else if (kind === 'pinset') {
+    if (parentLocked()) return;
+    const a = document.getElementById('pinNew').value.trim(), b2 = document.getElementById('pinNew2').value.trim();
+    const err = !/^\d{4}$/.test(a) ? '숫자 4자리로 적어 주세요' : a !== b2 ? '두 칸의 비밀번호가 달라요' : '';
+    document.getElementById('pinNew').value = ''; document.getElementById('pinNew2').value = '';
+    if (err) { UI.msg = { pinset: err }; UI.good = null; render(); return; }
+    const st = clone(S.settings), had = !!st.pinHash; st.pinHash = pinHash(a);
+    UI.parentOk = false; UI.msg = { pin: had ? '비밀번호를 바꾸고 잠갔어요.' : '비밀번호를 정하고 잠갔어요. 이제 부모님만 바꿀 수 있어요.' }; UI.good = 'pin';
+    saveSettings(st);
   } else if (kind === 'anniv') {
     const ni = document.getElementById('anName'), name = ni.value.trim();
     const m = +document.getElementById('anM').value, d = +document.getElementById('anD').value;
@@ -1707,9 +1988,12 @@ document.addEventListener('submit', e => {
     const err = !name ? '학원 이름을 적어 주세요' : !days.length ? '가는 요일을 하나 이상 눌러 주세요' : !start ? '시작 시간을 넣어 주세요' : end && end <= start ? '끝 시간이 시작보다 늦어야 해요' : '';
     if (err) { UI.msg = { acad: err }; UI.good = null; render(); return; }
     ['acName', 'acStart', 'acEnd', 'acBring'].forEach(id => { document.getElementById(id).value = ''; });
-    UI.acDays = []; UI.msg = {};
     const st = clone(S.settings); st.academies = st.academies || [];
-    st.academies.push({ id: uid('a'), name, days: days.slice().sort(), start, end, bring });
+    const body = { name, days: days.slice().sort(), start, end, bring };
+    const at = UI.acEdit ? st.academies.findIndex(a => a.id === UI.acEdit) : -1;
+    if (at >= 0) { st.academies[at] = { ...st.academies[at], ...body }; UI.msg = { acad: `${name} 고쳤어요.` }; }
+    else { st.academies.push({ id: uid('a'), ...body }); UI.msg = { acad: `${name} 넣었어요.` }; }
+    UI.good = 'acad'; UI.acDays = []; UI.acEdit = null;
     saveSettings(st);
   } else if (kind === 'task') {
     const i = document.getElementById('newTask'), name = i.value.trim(); if (!name) { i.focus(); return; }
